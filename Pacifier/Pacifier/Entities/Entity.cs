@@ -21,7 +21,7 @@ namespace Pacifier.Entities.Entities
             this.World = world;
             this.velocity = new Vector2();
             this.IsDead = false;
-            this.Bounds = new Circle(position, Math.Max(width, height) / 2f);
+            this.Bounds = new Circle(position, Math.Max(width, height) / 2.4f);
         }
 
         public override void Update(float delta)
@@ -29,7 +29,8 @@ namespace Pacifier.Entities.Entities
             base.Update(delta);
             position += velocity * delta;
             Bounds.Center = position;
-            position = Vector2.Clamp(Position, Size / 2, PR.SCREEN_SIZE - Size / 2);
+            position.X = MathHelper.Clamp(position.X, Size.X / 2, World.WORLD_WIDTH - Size.Y / 2);
+            position.Y = MathHelper.Clamp(position.Y, Size.Y / 2, World.WORLD_HEIGHT - Size.Y / 2);
         }
 
         public virtual void OnCollide(Entity other)

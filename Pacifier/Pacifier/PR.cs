@@ -1,4 +1,5 @@
 ﻿using CloudColony.Framework;
+using CloudColony.Framework.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -24,10 +25,15 @@ namespace Pacifier
         public static Texture2D Atlas { get; private set; }
 
         public static TextureRegion Pixel { get; private set; }
+        public static TextureRegion PixelGlow { get; private set; }
 
         public static TextureRegion Dumbbell { get; private set; }
-        public static TextureRegion PlayerRed { get; private set; }
-        public static TextureRegion PlayerBlue { get; private set; }
+        public static TextureRegion PlayerGreen { get; private set; }
+        public static TextureRegion PlayerYellow { get; private set; }
+
+        public static TextureRegion Enemy { get; private set; }
+
+        public static TextureRegion Particle { get; private set; }
 
 
         // UI
@@ -52,6 +58,8 @@ namespace Pacifier
         // Sound
         public static SoundEffect HitSound { get; private set; }
 
+        public static List<Song> Musics { get; private set; }
+
         public static void Load(ContentManager content)
         {
             LoadAssets(content);
@@ -61,28 +69,42 @@ namespace Pacifier
         {
             Atlas = content.Load<Texture2D>("Region");
 
-            //PointerBlue = new TextureRegion(Atlas, 256 + 20 + 32, 0, 32, 32);
-
-            // Font = content.Load<SpriteFont>("Font");
+            Font = content.Load<SpriteFont>("Font");
 
             Pixel = new TextureRegion(Atlas, 0, 0, 1, 1);
+            PixelGlow = new TextureRegion(Atlas, 32, 0, 32, 32);
+            Particle = new TextureRegion(Atlas, 64, 0, 32, 32);
 
             Dumbbell = new TextureRegion(Atlas, 0, 32, 148, 32);
 
-            PlayerRed = new TextureRegion(Atlas, 0, 64, 64, 64);
-            PlayerBlue = new TextureRegion(Atlas, 0, 64, 64, 64);
+            PlayerGreen = new TextureRegion(Atlas, 0, 64, 96, 96);
+            PlayerYellow = new TextureRegion(Atlas, 96, 64, 96, 96);
+
+
+            Enemy = new TextureRegion(Atlas, 0, 160, 96, 96);
 
 
             // Sound
             SoundEffect.MasterVolume = 1.0f;
 
-            MediaPlayer.Volume = 0.0f;
+           // MediaPlayer.Volume = 0.0f;
 
             MediaPlayer.IsRepeating = true;
+            Musics = new List<Song>();
+            Musics.Add(content.Load<Song>("blastculture"));
+            Musics.Add(content.Load<Song>("polesapart"));
+            Musics.Add(content.Load<Song>("problematic"));
+            Musics.Add(content.Load<Song>("strings"));
             //MediaPlayer.Play(content.Load<Song>("Sound/JuhaniJunkalaEpicBossBattle"));
 
-           // HitSound = content.Load<SoundEffect>("Sound/Hit");
-          
+            // HitSound = content.Load<SoundEffect>("Sound/Hit");
+
+        }
+
+        public static void PlayRandomSong()
+        {
+            MediaPlayer.Volume = 0.8f;
+            MediaPlayer.Play(Musics[MathUtils.Random(0, Musics.Count - 1)]);
         }
 
         public static bool AnyKeyPressed(PlayerIndex index)

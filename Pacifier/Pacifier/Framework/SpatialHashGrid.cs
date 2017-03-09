@@ -3,6 +3,7 @@ using Pacifier.Entities.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Pacifier.Entities;
 
 namespace CloudColony.Framework
 {
@@ -51,7 +52,7 @@ namespace CloudColony.Framework
 
         public void AddObject(Entity obj)
         {
-            var cellIds = GetIdForObj(obj);
+            var cellIds = GetIdForObj(obj.Bounds);
             foreach (var item in cellIds)
             {
                 Buckets[(item)].Add(obj);
@@ -67,31 +68,40 @@ namespace CloudColony.Framework
         }
 
         private List<int> bucketsObjIsIn = new List<int>();
-        private List<int> GetIdForObj(Entity obj)
+        private List<int> GetIdForObj(Circle bounds)
         {
             bucketsObjIsIn.Clear();
 
-            Vector2 min = new Vector2(
-               Math.Max(Math.Min(obj.Position.X - (obj.Bounds.Radius), SceneWidth - 1), 1),
-                 Math.Max(Math.Min(obj.Position.Y - (obj.Bounds.Radius), SceneHeight - 1), 1));
-
-            Vector2 max = new Vector2(
-                Math.Max(Math.Min(obj.Position.X + (obj.Bounds.Radius), SceneWidth - 1), 1),
-               Math.Max(Math.Min(obj.Position.Y + (obj.Bounds.Radius), SceneHeight - 1), 1));
-
             float width = Cols;
+            for (int x = (int)Math.Max(0, bounds.Center.X - bounds.Radius); x < Math.Min(SceneWidth, bounds.Center.X + bounds.Radius); x++)
+            {
+                for (int y = (int)Math.Max(0, bounds.Center.Y - bounds.Radius); y < Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius); y++)
+                {
+                    AddBucket(x, y, width, bucketsObjIsIn);
+                }
+            }
 
-            //TopLeft
-            AddBucket(min, width, bucketsObjIsIn);
+            //Vector2 min = new Vector2(
+            //   Math.Max(Math.Min(obj.Position.X - (obj.Bounds.Radius), SceneWidth - 1), 1),
+            //     Math.Max(Math.Min(obj.Position.Y - (obj.Bounds.Radius), SceneHeight - 1), 1));
 
-            //TopRight
-            AddBucket(new Vector2(max.X, min.Y), width, bucketsObjIsIn);
+            //Vector2 max = new Vector2(
+            //    Math.Max(Math.Min(obj.Position.X + (obj.Bounds.Radius), SceneWidth - 1), 1),
+            //   Math.Max(Math.Min(obj.Position.Y + (obj.Bounds.Radius), SceneHeight - 1), 1));
 
-            //BottomRight
-            AddBucket(new Vector2(max.X, max.Y), width, bucketsObjIsIn);
+            //float width = Cols;
 
-            //BottomLeft
-            AddBucket(new Vector2(min.X, max.Y), width, bucketsObjIsIn);
+            ////TopLeft
+            //AddBucket(min, width, bucketsObjIsIn);
+
+            ////TopRight
+            //AddBucket(new Vector2(max.X, min.Y), width, bucketsObjIsIn);
+
+            ////BottomRight
+            //AddBucket(new Vector2(max.X, max.Y), width, bucketsObjIsIn);
+
+            ////BottomLeft
+            //AddBucket(new Vector2(min.X, max.Y), width, bucketsObjIsIn);
 
             return bucketsObjIsIn;
         }
@@ -105,11 +115,20 @@ namespace CloudColony.Framework
 
         }
 
+        private void AddBucket(float x, float y, float width, List<int> buckettoaddto)
+        {
+            int cellPosition = (int)((Math.Floor(x / CellSize)) + (Math.Floor(y / CellSize)) * width);
+
+            if (!buckettoaddto.Contains(cellPosition))
+                buckettoaddto.Add(cellPosition);
+
+        }
+
         private List<Entity> colliders = new List<Entity>();
         public Entity[] GetPossibleColliders(Entity obj)
         {
             colliders.Clear();
-            var bucketIds = GetIdForObj(obj);
+            var bucketIds = GetIdForObj(obj.Bounds);
             foreach (var item in bucketIds)
             {
                 colliders.AddRange(Buckets[item]);
@@ -117,6 +136,21 @@ namespace CloudColony.Framework
             return colliders.Distinct().ToArray();
         }
 
-
+        private Circle tmpCircle = new Circle(Vector2.Zero, 0);
+        public Entity[] GetPossibleColliders(Enemy enemy, float r, Func<Entity, bool> cond = null)
+        {
+            colliders.Clear();
+            tmpCircle.Center = enemy.Bounds.Center;
+            tmpCircle.Radius = r;
+            var bucketIds = GetIdForObj(tmpCircle);
+            foreach (var item in bucketIds)
+            {
+                colliders.AddRange(Buckets[item]);
+            }
+            if (cond != null)
+                return colliders.Distinct().Where(cond).ToArray();
+            else
+                return colliders.Distinct().ToArray();
+        }
     }
 }

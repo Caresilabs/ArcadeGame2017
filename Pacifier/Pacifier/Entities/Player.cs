@@ -12,7 +12,7 @@ namespace Pacifier.Entities
 {
     public class Player : Entity
     {
-        public const float PLAYER_SPEED = 5;
+        public const float PLAYER_SPEED = 3.5f;
 
         public PlayerIndex Index { get; private set; }
 
@@ -30,14 +30,17 @@ namespace Pacifier.Entities
             const float speed = PLAYER_SPEED;
             velocity = speed * GetMovementDirection();
             //Position += Velocity;
-            Rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+
+            if (velocity != Vector2.Zero)
+                Rotation = (float)Math.Atan2(velocity.Y, velocity.X);
 
             UpdateCollision(delta);
         }
 
         private void UpdateCollision(float delta)
         {
-            foreach (var entity in World.Entities)
+            var colliders = World.Collisions.GetPossibleColliders(this);
+            foreach (var entity in colliders)
             {
                 if (entity == this)
                     continue;

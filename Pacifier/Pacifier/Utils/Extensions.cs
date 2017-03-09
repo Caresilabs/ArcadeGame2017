@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Pacifier;
+using CloudColony.Framework.Tools;
 
 namespace ShapeBlaster
 {
@@ -18,7 +19,7 @@ namespace ShapeBlaster
 		public static void DrawLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float thickness = 2f)
 		{
 			Vector2 delta = end - start;
-			spriteBatch.Draw(PR.Pixel, start, PR.Pixel, color, delta.ToAngle(), new Vector2(0, 0.5f), new Vector2(delta.Length(), thickness), SpriteEffects.None, 0f);
+			spriteBatch.Draw(PR.PixelGlow, start, PR.PixelGlow, color, delta.ToAngle(), new Vector2(0, 0.5f), new Vector2(delta.Length() / 32f, thickness / 12f), SpriteEffects.None, 0f);
 		}
 
 		public static float ToAngle(this Vector2 vector)
@@ -41,10 +42,10 @@ namespace ShapeBlaster
 			return (float)rand.NextDouble() * (maxValue - minValue) + minValue;
 		}
 
-		public static Vector2 NextVector2(this Random rand, float minLength, float maxLength)
+		public static Vector2 NextVector2(float minLength, float maxLength)
 		{
-			double theta = rand.NextDouble() * 2 * Math.PI;
-			float length = rand.NextFloat(minLength, maxLength);
+			double theta = MathUtils.Random() * 2 * Math.PI;
+			float length = MathUtils.Random(minLength, maxLength);
 			return new Vector2(length * (float)Math.Cos(theta), length * (float)Math.Sin(theta));
 		}
 	}

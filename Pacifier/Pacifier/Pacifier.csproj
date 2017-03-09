@@ -41,6 +41,8 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Grid.cs" />
+    <Compile Include="Entities\Particles\ParticleManager.cs" />
+    <Compile Include="Entities\Particles\ParticleState.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Framework\Animation.cs" />
     <Compile Include="Framework\Animations.cs" />

@@ -1,5 +1,7 @@
 ﻿using CloudColony.Framework.Tools;
+using Microsoft.Xna.Framework;
 using Pacifier.Entities;
+using Pacifier.Entities.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,34 +15,83 @@ namespace Pacifier.Simulation
 
         private float time;
 
-        private Random rnd;
-
         public Spawner(World world)
         {
             this.World = world;
-            this.rnd = new Random();
-            SpawnDumbbell();
         }
 
         public void Update(float delta)
         {
+            if (World.State != World.WorldState.RUNNING)
+                return;
+
             time += delta;
-            if (MathUtils.Random(0, 100) < 4)
-                SpawnEnemies(1);
+            if (MathUtils.Random(0, 1000) < 10)
+                SpawnEnemies((int)(Math.Max(1, time / 9f)));
+
+            if (MathUtils.Random(0, 1000) < 5)
+                SpawnDumbbell();
         }
 
         private void SpawnEnemies(int count)
         {
+            var pos = RandomPointOnEdge();
             for (int i = 0; i < count; i++)
             {
-                World.AddEnemy(new Enemy(World, PR.Pixel, MathUtils.Random(1, World.WORLD_WIDTH - 1), MathUtils.Random(1, World.WORLD_HEIGHT - 1), .5f, .5f));
+                var enemyPos = pos;
+                enemyPos.X += MathUtils.Random(-1f, 1f);
+                enemyPos.Y += MathUtils.Random(-1f, 1f);
+
+                var enemy = new Enemy(World, PR.Enemy, enemyPos.X, enemyPos.Y, .45f, .45f);
+
+                if (IsSafeSpawn(enemy))
+                {
+                    World.AddEnemy(enemy);
+                }
+            }
+        }
+
+        private Vector2 RandomPointOnEdge()
+        {
+            var val = MathUtils.Random(0, 100);
+            if (val < 25)
+            {
+                return new Vector2(MathUtils.Random(0, World.WORLD_HEIGHT), 0);
+            }
+            else if (val < 50)
+            {
+                return new Vector2(MathUtils.Random(0, World.WORLD_WIDTH), World.WORLD_HEIGHT);
+            }
+            else if (val < 75)
+            {
+                return new Vector2(0, MathUtils.Random(0, World.WORLD_HEIGHT));
+            }
+            else
+            {
+                return new Vector2(World.WORLD_WIDTH, MathUtils.Random(0, World.WORLD_WIDTH));
             }
         }
 
         public void SpawnDumbbell()
         {
-            Dumbbell score = new Dumbbell(World, PR.Dumbbell, MathUtils.Random(1, World.WORLD_WIDTH - 1), MathUtils.Random(1, World.WORLD_HEIGHT - 1)) ;
-            World.Add(score);
+            Dumbbell score = new Dumbbell(World, PR.Dumbbell, MathUtils.Random(1, World.WORLD_WIDTH - 1), MathUtils.Random(1, World.WORLD_HEIGHT - 1));
+            for (int i = 0; i < 10; ++i)
+            {
+                if (IsSafeSpawn(score))
+                {
+                    World.Add(score);
+                    break;
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        private bool IsSafeSpawn(Entity e)
+        {
+            return !World.PlayerYellow.Bounds.Intersects(e.Bounds) && !World.PlayerGreen.Bounds.Intersects(e.Bounds);
         }
     }
 }

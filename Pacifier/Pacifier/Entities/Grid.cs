@@ -194,13 +194,17 @@ namespace ShapeBlaster
 				mass.Update();
 		}
 
-		public void Draw(SpriteBatch spriteBatch)
+        private float thickBig = 0.06f;
+        private float thickSmall = 0.04f;
+        Color color = new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
+
+        public void Draw(SpriteBatch spriteBatch)
 		{
 			screenSize = PR.SCREEN_SIZE;
 
 			int width = points.GetLength(0);
 			int height = points.GetLength(1);
-			Color color = new Color(30, 30, 139, 85);	// dark blue
+          
 
 			for (int y = 1; y < height; y++)
 			{
@@ -211,7 +215,7 @@ namespace ShapeBlaster
 					if (x > 1)
 					{
 						left = ToVec2(points[x - 1, y].Position);
-						float thickness = y % 3 == 1 ? .10f : .03f;
+						float thickness = y % 2 == 1 ? thickBig : thickSmall;
 						
 						// use Catmull-Rom interpolation to help smooth bends in the grid
 						int clampedX = Math.Min(x + 1, width - 1);
@@ -230,7 +234,7 @@ namespace ShapeBlaster
 					if (y > 1)
 					{
 						up = ToVec2(points[x, y - 1].Position);
-						float thickness = x % 3 == 1 ? .10f : .03f;
+						float thickness = x % 2 == 1 ? thickBig : thickSmall;
 						int clampedY = Math.Min(y + 1, height - 1);
 						Vector2 mid = Vector2.CatmullRom(ToVec2(points[x, y - 2].Position), up, p, ToVec2(points[x, clampedY].Position), 0.5f);
 
@@ -248,8 +252,8 @@ namespace ShapeBlaster
 					if (x > 1 && y > 1)
 					{
 						Vector2 upLeft = ToVec2(points[x - 1, y - 1].Position);
-						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), color, .1f);	// vertical line
-						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), color, .1f);	// horizontal line
+						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), color, thickSmall * 0.5f);	// vertical line
+						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), color, thickSmall * 0.5f);	// horizontal line
 					}
 				}
 			}

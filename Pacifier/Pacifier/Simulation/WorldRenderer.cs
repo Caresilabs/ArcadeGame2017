@@ -20,19 +20,32 @@ namespace Pacifier.Simulation
         {
             // Clear Screen
             
-            batch.Begin(SpriteSortMode.Deferred,
+            batch.Begin(SpriteSortMode.BackToFront,
                     BlendState.AlphaBlend,
                     SamplerState.PointClamp,
                     null,
                     null,
                     null,
                     world.Camera.GetMatrix());
+            {
+                world.Grid.Draw(batch);
 
-            world.Grid.Draw(batch);
+                DrawObjects(batch);
 
-            DrawObjects(batch);
-
+                world.ParticleManager.Draw(batch);
+            }
             batch.End();
+
+
+            //batch.Begin(SpriteSortMode.Deferred,
+            //      BlendState.AlphaBlend,
+            //      SamplerState.PointClamp,
+            //      null,
+            //      null,
+            //      null,
+            //      world.Camera.GetMatrix());
+
+            //batch.End();
         }
 
         private void DrawObjects(SpriteBatch batch)

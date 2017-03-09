@@ -6,13 +6,15 @@ using System.Text;
 using CloudColony.Framework;
 using Pacifier.Simulation;
 using Microsoft.Xna.Framework;
+using Pacifier.Entities.Particles;
+using ShapeBlaster;
 
 namespace Pacifier.Entities
 {
     public class Enemy : Entity
     {
-        public const float SEPARATION_WEIGHT = 13f;
-        public const float COHESION_WEIGHT = 3f;
+        public const float SEPARATION_WEIGHT = 0.75f;
+        public const float COHESION_WEIGHT = 11f;
         public const float ALIGNMENT_WEIGHT = 2f;
      
 
@@ -44,7 +46,9 @@ namespace Pacifier.Entities
             SeekTarget(delta);
 
             CapSpeed(delta);
-            
+
+            Rotation = (float)Math.Atan2(velocity.Y, velocity.X);
+
         }
 
         public override void OnCollide(Entity other)
@@ -60,17 +64,17 @@ namespace Pacifier.Entities
         private void SeekTarget(float delta)
         {
             var desPos = Vector2.Zero;
-            if (World.PlayerRed.IsDead)
+            if (World.PlayerGreen.IsDead)
             {
-                desPos = World.PlayerBlue.Position;
+                desPos = World.PlayerYellow.Position;
             }
-            else if (World.PlayerBlue.IsDead)
+            else if (World.PlayerYellow.IsDead)
             {
-                desPos = World.PlayerRed.Position;
+                desPos = World.PlayerGreen.Position;
             }
             else
             {
-                desPos = Vector2.Distance(World.PlayerRed.Position, position) < Vector2.Distance(World.PlayerBlue.Position, position) ? World.PlayerRed.Position : World.PlayerBlue.Position;
+                desPos = Vector2.Distance(World.PlayerGreen.Position, position) < Vector2.Distance(World.PlayerYellow.Position, position) ? World.PlayerGreen.Position : World.PlayerYellow.Position;
             }
             
             var desiredVelocity = (desPos - position);
@@ -121,15 +125,26 @@ namespace Pacifier.Entities
                 return Vector2.Zero;
 
             Vector2 pvj = Vector2.Zero;
-            foreach (var b in World.Enemies)
+            var colliders = World.Collisions.GetPossibleColliders(this, 5f, x => x is Enemy);
+            foreach (var b in colliders) 
             {
                 if (this != b)
                 {
-                    pvj += b.velocity;
+                    pvj += b.Velocity;
                 }
             }
             pvj /= (World.Enemies.Count - 1);
             return (pvj - velocity) * 0.01f;
+        }
+
+        internal void Kill()
+        {
+            IsDead = true;
+            for (int i = 0; i < 30; i++)
+            {
+                World.ParticleManager.CreateParticle(PR.Particle, Position, Color.MediumVioletRed, 50, 1,
+                    new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 1 });
+            }
         }
 
         private Vector2 Cohesion()
@@ -139,11 +154,12 @@ namespace Pacifier.Entities
 
             Vector2 pcj = Vector2.Zero;
             int neighborCount = 0;
-            foreach (var b in World.Enemies)
+            var colliders = World.Collisions.GetPossibleColliders(this, 3.5f, x => x is Enemy);
+            foreach (var b in colliders)
             {
-                if (this != b && Distance(b.position, position) <= 3.5f)
+                if (this != b && Distance(b.Position, position) <= 3.5f)
                 {
-                    pcj += b.position;
+                    pcj += b.Position;
                     neighborCount++;
                 }
             }
@@ -158,14 +174,15 @@ namespace Pacifier.Entities
 
             Vector2 vec = Vector2.Zero;
             int neighborCount = 0;
-            foreach (var b in World.Enemies)
+            var colliders = World.Collisions.GetPossibleColliders(this, 4f, x => x is Enemy);
+            foreach (var b in colliders)
             {
                 if (this != b)
                 {
-                    var distance = Distance(position, b.position);
-                    if (distance > 0 && distance < 5)
+                    var distance = Distance(position, b.Position);
+                    if (distance > 0 && distance < 4)
                     {
-                        var deltaVector = position - b.position;
+                        var deltaVector = position - b.Position;
                         deltaVector.Normalize();
                         deltaVector /= distance;
                         vec += deltaVector;
