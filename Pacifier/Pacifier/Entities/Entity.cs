@@ -29,6 +29,16 @@ namespace Pacifier.Entities.Entities
             base.Update(delta);
             position += velocity * delta;
             Bounds.Center = position;
+            position = Vector2.Clamp(Position, Size / 2, PR.SCREEN_SIZE - Size / 2);
+        }
+
+        public virtual void OnCollide(Entity other)
+        {
+        }
+
+        public virtual bool QueryCollision(Entity other)
+        {
+            return Bounds.Intersects(other.Bounds);
         }
     }
 }

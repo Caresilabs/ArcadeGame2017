@@ -30,7 +30,15 @@ namespace Pacifier.Simulation
 
             world.Grid.Draw(batch);
 
+            DrawObjects(batch);
+
             batch.End();
+        }
+
+        private void DrawObjects(SpriteBatch batch)
+        {
+            foreach (var obj in world.Entities)
+                obj.Draw(batch);
         }
     }
 }

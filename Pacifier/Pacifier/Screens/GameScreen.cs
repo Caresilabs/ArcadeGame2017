@@ -18,6 +18,7 @@ namespace Pacifier.Screens
         {
             this.world = new World();
             this.renderer = new WorldRenderer(world);
+            
         }
 
         public override void Update(float delta)

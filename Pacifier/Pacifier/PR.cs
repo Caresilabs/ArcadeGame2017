@@ -22,28 +22,17 @@ namespace Pacifier
 
         // Game
         public static Texture2D Atlas { get; private set; }
-        public static Texture2D TransitionTexture { get; private set; }
-        public static Texture2D ParallaxTexture { get; private set; }
 
         public static TextureRegion Pixel { get; private set; }
 
-        public static TextureRegion PointerBlue { get; private set; }
-        public static TextureRegion BulletBlue { get; private set; }
-        public static TextureRegion ShieldBlue { get; private set; }
+        public static TextureRegion Dumbbell { get; private set; }
+        public static TextureRegion PlayerRed { get; private set; }
+        public static TextureRegion PlayerBlue { get; private set; }
 
-        public static TextureRegion PointerRed { get; private set; }
-        public static TextureRegion BulletRed { get; private set; }
-        public static TextureRegion ShieldRed { get; private set; }
-
-        public static TextureRegion RedPowerup { get; private set; }
-        public static TextureRegion BluePowerup { get; private set; }
-        public static TextureRegion GreenPowerup { get; private set; }
 
         // UI
         public static TextureRegion ScoreBoard { get; private set; }
-        public static TextureRegion Frame { get; private set; }
-        public static TextureRegion GameBackground { get; private set; }
-        public static TextureRegion MenuBackground { get; private set; }
+
 
         public static TextureRegion Button1 { get; private set; }
         public static TextureRegion Button2 { get; private set; }
@@ -54,13 +43,11 @@ namespace Pacifier
         public static TextureRegion Sebastian { get; private set; }
 
         public static TextureRegion WinBlue { get; private set; }
-
         public static TextureRegion WinRed { get; private set; }
 
 
         // Fonts
         public static SpriteFont Font { get; private set; }
-        public static TextureRegion CloudBackground { get; private set; }
 
         // Sound
         public static SoundEffect HitSound { get; private set; }
@@ -79,6 +66,11 @@ namespace Pacifier
             // Font = content.Load<SpriteFont>("Font");
 
             Pixel = new TextureRegion(Atlas, 0, 0, 1, 1);
+
+            Dumbbell = new TextureRegion(Atlas, 0, 32, 148, 32);
+
+            PlayerRed = new TextureRegion(Atlas, 0, 64, 64, 64);
+            PlayerBlue = new TextureRegion(Atlas, 0, 64, 64, 64);
 
 
             // Sound
