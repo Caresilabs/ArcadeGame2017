@@ -17,6 +17,13 @@ namespace Pacifier.Entities.Particles
         public ParticleType Type;
         public float LengthMultiplier;
 
+        public ParticleState(Vector2 velocity, ParticleType type, float lengthMultiplier = 1f)
+        {
+            Velocity = velocity;
+            Type = type;
+            LengthMultiplier = lengthMultiplier;
+        }
+
         public static void UpdateParticle(ParticleManager<ParticleState>.Particle particle)
         {
             var vel = particle.State.Velocity;

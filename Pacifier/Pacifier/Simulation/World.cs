@@ -42,6 +42,8 @@ namespace Pacifier.Simulation
 
         public float SlowmoTime { get; private set; }
 
+        public float Time { get; private set; }
+
         private Spawner spawner;
 
         public World()
@@ -72,6 +74,8 @@ namespace Pacifier.Simulation
 
         public void Update(float delta)
         {
+            Time += delta;
+
             if (SlowmoTime > 0)
             {
                 SlowmoTime -= delta;

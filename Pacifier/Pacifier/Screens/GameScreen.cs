@@ -114,6 +114,14 @@ namespace Pacifier.Screens
                 {
                    
                     case GameState.RUNNING:
+                        string scoreText = "Green Score: " + world.PlayerGreen.Score;
+                        batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.05f),
+                            Color.White, 0, PR.Font.MeasureString(scoreText) / 2f, 2.0f, SpriteEffects.None, 0);
+
+                        scoreText = "Yellow Score: " + world.PlayerYellow.Score;
+                        batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.1f),
+                            Color.White, 0, PR.Font.MeasureString(scoreText) / 2f, 2.0f, SpriteEffects.None, 0);
+
                         break;
                     case GameState.GAMEOVER:
 

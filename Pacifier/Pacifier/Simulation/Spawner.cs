@@ -1,4 +1,5 @@
-﻿using CloudColony.Framework.Tools;
+﻿using CloudColony.Framework;
+using CloudColony.Framework.Tools;
 using Microsoft.Xna.Framework;
 using Pacifier.Entities;
 using Pacifier.Entities.Entities;
@@ -44,7 +45,7 @@ namespace Pacifier.Simulation
 
                 var enemy = new Enemy(World, PR.Enemy, enemyPos.X, enemyPos.Y, .45f, .45f);
 
-                if (IsSafeSpawn(enemy))
+                if (IsSafeSpawn(enemy, enemy.Bounds.Radius * 2))
                 {
                     World.AddEnemy(enemy);
                 }
@@ -77,21 +78,24 @@ namespace Pacifier.Simulation
             Dumbbell score = new Dumbbell(World, PR.Dumbbell, MathUtils.Random(1, World.WORLD_WIDTH - 1), MathUtils.Random(1, World.WORLD_HEIGHT - 1));
             for (int i = 0; i < 10; ++i)
             {
-                if (IsSafeSpawn(score))
+                if (IsSafeSpawn(score, score.Bounds.Radius * 2f))
                 {
                     World.Add(score);
                     break;
                 }
                 else
                 {
-
+                    score.SetPosition(MathUtils.Random(1, World.WORLD_WIDTH - 1), MathUtils.Random(1, World.WORLD_HEIGHT - 1));
                 }
             }
         }
 
-        private bool IsSafeSpawn(Entity e)
+        private Circle tmpCircle = new Circle(Vector2.Zero, 0);
+        private bool IsSafeSpawn(Entity e, float r)
         {
-            return !World.PlayerYellow.Bounds.Intersects(e.Bounds) && !World.PlayerGreen.Bounds.Intersects(e.Bounds);
+            tmpCircle.Center = e.Position;
+            tmpCircle.Radius = r;
+            return !World.PlayerYellow.Bounds.Intersects(tmpCircle) && !World.PlayerGreen.Bounds.Intersects(tmpCircle);
         }
     }
 }

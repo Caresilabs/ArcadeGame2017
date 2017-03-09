@@ -19,6 +19,8 @@ namespace Pacifier.Entities
         private const float BELL_RADIUS = 0.15f;
         private const float MAX_SPEED = 0.5f;
 
+        private const int SCORE_VALUE = 100;
+
         private Circle leftBell;
         private Circle rightBell;
         private Segment scoreBounds;
@@ -81,7 +83,6 @@ namespace Pacifier.Entities
             {
                 if (scoreBounds.Collide(other.Bounds))
                 {
-                    (other as Player).AddScore(10);
                     KillAllNearby(other as Player);
                 }
                 else
@@ -101,18 +102,20 @@ namespace Pacifier.Entities
             {
                 if (Vector2.Distance(position, enemy.Position) <= KILL_DIST)
                 {
-                    // ADD SCORE
-                    player.AddScore(5);
                     enemy.Kill();
                     ++count;
                 }
             }
-            World.Grid.ApplyExplosiveForce(10 + count * 0.01f, position, KILL_DIST + count * 0.1f);
+
+            // ADD SCORE
+            player.AddScore(SCORE_VALUE * Math.Max(1, count * count));
+
+            World.Grid.ApplyExplosiveForce(10 + count * 0.01f, position, KILL_DIST + count * 0.1f); // TODO ADD COLOR
 
             for (int i = 0; i < 30; i++)
             {
                 World.ParticleManager.CreateParticle(PR.Particle, Position, Color.CornflowerBlue, 50, 1,
-                    new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 0f });
+                    new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 0f }); 
             }
         }
 

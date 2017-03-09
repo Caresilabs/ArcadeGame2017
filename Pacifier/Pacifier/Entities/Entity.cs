@@ -39,6 +39,9 @@ namespace Pacifier.Entities.Entities
 
         public virtual bool QueryCollision(Entity other)
         {
+            if (IsDead)
+                return false;
+
             return Bounds.Intersects(other.Bounds);
         }
     }

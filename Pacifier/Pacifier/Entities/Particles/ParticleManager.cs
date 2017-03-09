@@ -63,12 +63,13 @@ namespace Pacifier.Entities.Particles
 
         public void CreateParticle(TextureRegion texture, Vector2 position, Color tint, float duration, float scale, T state, float theta = 0)
         {
-            scale = scale / 64;
             CreateParticle(texture, position, tint, duration, new Vector2(scale), state, theta);
         }
 
         public void CreateParticle(TextureRegion texture, Vector2 position, Color tint, float duration, Vector2 scale, T state, float theta = 0)
         {
+            scale /= 64f;
+
             Particle particle;
             if (particleList.Count == particleList.Capacity)
             {

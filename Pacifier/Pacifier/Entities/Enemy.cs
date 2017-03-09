@@ -27,7 +27,6 @@ namespace Pacifier.Entities
             MaxSpeed = 1f;
         }
 
-        
         public override void Update(float delta)
         {
             base.Update(delta);
@@ -42,6 +41,8 @@ namespace Pacifier.Entities
             {
                 velocity += flock * delta;
             }
+
+            Scale = new Vector2(1 + 0.2f * (float)Math.Sin(World.Time * 5), 1);
 
             SeekTarget(delta);
 
@@ -125,7 +126,7 @@ namespace Pacifier.Entities
                 return Vector2.Zero;
 
             Vector2 pvj = Vector2.Zero;
-            var colliders = World.Collisions.GetPossibleColliders(this, 5f, x => x is Enemy);
+            var colliders = World.Collisions.GetPossibleColliders(this, 4f, x => x is Enemy);
             foreach (var b in colliders) 
             {
                 if (this != b)
@@ -154,10 +155,10 @@ namespace Pacifier.Entities
 
             Vector2 pcj = Vector2.Zero;
             int neighborCount = 0;
-            var colliders = World.Collisions.GetPossibleColliders(this, 3.5f, x => x is Enemy);
+            var colliders = World.Collisions.GetPossibleColliders(this, 2f, x => x is Enemy);
             foreach (var b in colliders)
             {
-                if (this != b && Distance(b.Position, position) <= 3.5f)
+                if (this != b && Distance(b.Position, position) <= 2f)
                 {
                     pcj += b.Position;
                     neighborCount++;
@@ -174,13 +175,13 @@ namespace Pacifier.Entities
 
             Vector2 vec = Vector2.Zero;
             int neighborCount = 0;
-            var colliders = World.Collisions.GetPossibleColliders(this, 4f, x => x is Enemy);
+            var colliders = World.Collisions.GetPossibleColliders(this, 2.5f, x => x is Enemy);
             foreach (var b in colliders)
             {
                 if (this != b)
                 {
                     var distance = Distance(position, b.Position);
-                    if (distance > 0 && distance < 4)
+                    if (distance > 0 && distance < 2.5f)
                     {
                         var deltaVector = position - b.Position;
                         deltaVector.Normalize();
