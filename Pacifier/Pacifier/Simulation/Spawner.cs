@@ -16,6 +16,9 @@ namespace Pacifier.Simulation
 
         private float time;
 
+        private float bellTime;
+        private float enemyTime;
+
         public Spawner(World world)
         {
             this.World = world;
@@ -27,11 +30,28 @@ namespace Pacifier.Simulation
                 return;
 
             time += delta;
-            if (MathUtils.Random(0, 1000) < 10)
-                SpawnEnemies((int)(Math.Max(1, time / 9f)));
+            bellTime -= delta;
+            enemyTime -= delta;
 
-            if (MathUtils.Random(0, 1000) < 5)
+            if (bellTime < 0)
+            {
                 SpawnDumbbell();
+
+                bellTime = MathHelper.Max(2, MathUtils.Random(4, 7f) - (time * 0.03f));
+            }
+
+            if (enemyTime < 0)
+            {
+                SpawnEnemies((int)(Math.Max(1, time / 3f)));
+
+                enemyTime = MathUtils.Random(1.5f, 3.5f);
+            }
+
+            //if (MathUtils.Random(0, 1000) < 10)
+            //    SpawnEnemies((int)(Math.Max(1, time / 9f)));
+
+            //if (MathUtils.Random(0, 1000) < 5)
+            //    SpawnDumbbell();
         }
 
         private void SpawnEnemies(int count)

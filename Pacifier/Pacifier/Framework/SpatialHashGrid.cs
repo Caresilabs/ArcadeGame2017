@@ -73,9 +73,13 @@ namespace CloudColony.Framework
             bucketsObjIsIn.Clear();
 
             float width = Cols;
-            for (int x = (int)Math.Max(0, bounds.Center.X - bounds.Radius); x < Math.Min(SceneWidth, bounds.Center.X + bounds.Radius); x++)
+
+            float xMax = Math.Min(SceneWidth, bounds.Center.X + bounds.Radius);
+            float yMax = Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius);
+
+            for (float x = (int)Math.Max(0, bounds.Center.X - bounds.Radius); x < xMax; x+= 2)
             {
-                for (int y = (int)Math.Max(0, bounds.Center.Y - bounds.Radius); y < Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius); y++)
+                for (float y = (int)Math.Max(0, bounds.Center.Y - bounds.Radius); y < yMax; y+= 2)
                 {
                     AddBucket(x, y, width, bucketsObjIsIn);
                 }

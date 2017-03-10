@@ -21,9 +21,12 @@ namespace Pacifier.Entities
         public long Score { get; private set; }
         public object Orientation { get; private set; }
 
+        public Color ShipColor { get; private set; }
+
         public Player(World world, PlayerIndex index, TextureRegion region, float x, float y) : base(world, region, x, y, 0.45f, 0.45f)
         {
             this.Index = index;
+            this.ShipColor = index == PlayerIndex.One ? Color.Green : Color.Yellow;
         }
 
         public override void Update(float delta)

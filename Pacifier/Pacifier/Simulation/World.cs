@@ -50,7 +50,7 @@ namespace Pacifier.Simulation
         {
             //this.Grid = new Grid(new Rectangle(-64, -72, PR.VIEWPORT_WIDTH + 64, PR.VIEWPORT_HEIGHT + 72), new Vector2(64, 72));
             this.Collisions = new SpatialHashGrid();
-            this.Collisions.Setup((int)(WORLD_WIDTH + 1), (int)(WORLD_HEIGHT + 1), 3.5f);
+            this.Collisions.Setup((int)(WORLD_WIDTH + 1), (int)(WORLD_HEIGHT + 1), 3.0f);
             this.Grid = new Grid(new Rectangle(-1,-1, (int)WORLD_WIDTH + 2, (int)WORLD_HEIGHT + 1), new Vector2(1, 1));
             this.Camera = new Camera2D(WORLD_WIDTH, WORLD_HEIGHT);
             this.Entities = new List<Entity>();

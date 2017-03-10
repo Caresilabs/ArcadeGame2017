@@ -20,14 +20,17 @@ namespace ShapeBlaster
 			public Vector3 Velocity;
 			public float InverseMass;
 
-			private Vector3 acceleration;
+            public Color Color;
+
+            private Vector3 acceleration;
 			private float damping = 0.98f;
 
 			public PointMass(Vector3 position, float invMass)
 			{
 				Position = position;
 				InverseMass = invMass;
-			}
+                Color = gridColor;
+            }
 
 			public void ApplyForce(Vector3 force)
 			{
@@ -49,7 +52,9 @@ namespace ShapeBlaster
 
 				Velocity *= damping;
 				damping = 0.98f;
-			}
+
+                Color = Color.Lerp(Color, gridColor, 0.01f);
+            }
 		}
 
 		struct Spring
@@ -60,7 +65,7 @@ namespace ShapeBlaster
 			public float Stiffness;
 			public float Damping;
 
-			public Spring(PointMass end1, PointMass end2, float stiffness, float damping)
+            public Spring(PointMass end1, PointMass end2, float stiffness, float damping)
 			{
 				End1 = end1;
 				End2 = end2;
@@ -82,7 +87,8 @@ namespace ShapeBlaster
 				var dv = End2.Velocity - End1.Velocity;
 				var force = Stiffness * x - dv * Damping;
 
-				End1.ApplyForce(-force);
+             
+                End1.ApplyForce(-force);
 				End2.ApplyForce(force);
 			}
 		}
@@ -167,18 +173,20 @@ namespace ShapeBlaster
 			}
 		}
 
-		public void ApplyExplosiveForce(float force, Vector2 position, float radius)
+		public void ApplyExplosiveForce(float force, Vector2 position, float radius, Color color)
 		{
-			ApplyExplosiveForce(force, new Vector3(position, 0), radius);
+			ApplyExplosiveForce(force, new Vector3(position, 0), radius, color);
 		}
 
-		public void ApplyExplosiveForce(float force, Vector3 position, float radius)
+		public void ApplyExplosiveForce(float force, Vector3 position, float radius, Color color )
 		{
 			foreach (var mass in points)
 			{
 				float dist2 = Vector3.DistanceSquared(position, mass.Position);
-				if (dist2 < radius * radius)
+                float r2 = radius * radius;
+				if (dist2 < r2)
 				{
+                    mass.Color = Color.Lerp(color, gridColor, dist2 / r2);
 					mass.ApplyForce(100 * force * (mass.Position - position) / (10000 + dist2));
 					mass.IncreaseDamping(0.6f);
 				}
@@ -196,7 +204,7 @@ namespace ShapeBlaster
 
         private float thickBig = 0.06f;
         private float thickSmall = 0.04f;
-        Color color = new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
+        static readonly Color gridColor = new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
 
         public void Draw(SpriteBatch spriteBatch)
 		{
@@ -214,7 +222,9 @@ namespace ShapeBlaster
 					Vector2 p = ToVec2(points[x, y].Position);
 					if (x > 1)
 					{
-						left = ToVec2(points[x - 1, y].Position);
+                        var p1 = points[x - 1, y];
+
+                        left = ToVec2(p1.Position);
 						float thickness = y % 2 == 1 ? thickBig : thickSmall;
 						
 						// use Catmull-Rom interpolation to help smooth bends in the grid
@@ -225,26 +235,27 @@ namespace ShapeBlaster
 						// new interpolated midpoint
 						if (Vector2.DistanceSquared(mid, (left + p) / 2) > 1)
 						{
-							spriteBatch.DrawLine(left, mid, color, thickness);
-							spriteBatch.DrawLine(mid, p, color, thickness);
+							spriteBatch.DrawLine(left, mid, p1.Color, thickness);
+							spriteBatch.DrawLine(mid, p, p1.Color, thickness);
 						}
 						else
-							spriteBatch.DrawLine(left, p, color, thickness);
+							spriteBatch.DrawLine(left, p, p1.Color, thickness);
 					}
 					if (y > 1)
 					{
-						up = ToVec2(points[x, y - 1].Position);
+                        var p1 = points[x, y - 1];
+                        up = ToVec2(p1.Position);
 						float thickness = x % 2 == 1 ? thickBig : thickSmall;
 						int clampedY = Math.Min(y + 1, height - 1);
 						Vector2 mid = Vector2.CatmullRom(ToVec2(points[x, y - 2].Position), up, p, ToVec2(points[x, clampedY].Position), 0.5f);
 
 						if (Vector2.DistanceSquared(mid, (up + p) / 2) > 1)
 						{
-							spriteBatch.DrawLine(up, mid, color, thickness);
-							spriteBatch.DrawLine(mid, p, color, thickness);
+							spriteBatch.DrawLine(up, mid, p1.Color, thickness);
+							spriteBatch.DrawLine(mid, p, p1.Color, thickness);
 						}
 						else
-							spriteBatch.DrawLine(up, p, color, thickness);
+							spriteBatch.DrawLine(up, p, p1.Color, thickness);
 					}
 
 					// Add interpolated lines halfway between our point masses. This makes the grid look
@@ -252,8 +263,8 @@ namespace ShapeBlaster
 					if (x > 1 && y > 1)
 					{
 						Vector2 upLeft = ToVec2(points[x - 1, y - 1].Position);
-						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), color, thickSmall * 0.5f);	// vertical line
-						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), color, thickSmall * 0.5f);	// horizontal line
+						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), gridColor, thickSmall * 0.5f);	// vertical line
+						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), gridColor, thickSmall * 0.5f);	// horizontal line
 					}
 				}
 			}

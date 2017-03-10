@@ -13,7 +13,7 @@ namespace Pacifier.Entities
 {
     public class Enemy : Entity
     {
-        public const float SEPARATION_WEIGHT = 0.75f;
+        public const float SEPARATION_WEIGHT = 2f;
         public const float COHESION_WEIGHT = 11f;
         public const float ALIGNMENT_WEIGHT = 2f;
      
@@ -30,11 +30,12 @@ namespace Pacifier.Entities
         public override void Update(float delta)
         {
             base.Update(delta);
-            
 
-            var alignment = Alignment();
-            var cohesion = Cohesion();
-            var separation = Separation();
+            var colliders = World.Collisions.GetPossibleColliders(this, 3f, x => x is Enemy);
+
+            var alignment = Vector2.Zero;// Alignment(colliders);
+            var cohesion = Vector2.Zero;// Cohesion(colliders);
+            var separation = Separation(colliders);
 
             var flock = (alignment * ALIGNMENT_WEIGHT) + (cohesion * COHESION_WEIGHT) + (separation * SEPARATION_WEIGHT);
             if (flock != Vector2.Zero)
@@ -49,7 +50,6 @@ namespace Pacifier.Entities
             CapSpeed(delta);
 
             Rotation = (float)Math.Atan2(velocity.Y, velocity.X);
-
         }
 
         public override void OnCollide(Entity other)
@@ -58,7 +58,7 @@ namespace Pacifier.Entities
             if (other is Player)
             {
                 other.IsDead = true;
-                World.Grid.ApplyExplosiveForce(10, position, 3);
+                World.Grid.ApplyExplosiveForce(10, position, 3, Color.Red);
             }
         }
 
@@ -98,9 +98,7 @@ namespace Pacifier.Entities
             {
                 position.X = Size.X / 2f;
                 velocity.X = Math.Abs(velocity.X);
-            }
-
-            if (position.X > World.WORLD_WIDTH - Size.X / 2f)
+            } else           if (position.X > World.WORLD_WIDTH - Size.X / 2f)
             {
                 position.X = World.WORLD_WIDTH - Size.X / 2f;
                 velocity.X = -Math.Abs(velocity.X);
@@ -110,9 +108,7 @@ namespace Pacifier.Entities
             {
                 position.Y = Size.Y / 2f;
                 velocity.Y = Math.Abs(velocity.Y);
-            }
-
-            if (position.Y > World.WORLD_HEIGHT - Size.Y / 2f)
+            }             if (position.Y > World.WORLD_HEIGHT - Size.Y / 2f)
             {
                 position.Y = World.WORLD_HEIGHT - Size.Y / 2f;
                 velocity.Y = -Math.Abs(velocity.Y);
@@ -120,13 +116,13 @@ namespace Pacifier.Entities
         }
 
         
-        private Vector2 Alignment()
+        private Vector2 Alignment(Entity[] colliders)
         {
             if (World.Enemies.Count <= 1)
                 return Vector2.Zero;
 
             Vector2 pvj = Vector2.Zero;
-            var colliders = World.Collisions.GetPossibleColliders(this, 4f, x => x is Enemy);
+           
             foreach (var b in colliders) 
             {
                 if (this != b)
@@ -138,7 +134,7 @@ namespace Pacifier.Entities
             return (pvj - velocity) * 0.01f;
         }
 
-        internal void Kill()
+        public void Kill()
         {
             IsDead = true;
             for (int i = 0; i < 30; i++)
@@ -148,14 +144,13 @@ namespace Pacifier.Entities
             }
         }
 
-        private Vector2 Cohesion()
+        private Vector2 Cohesion(Entity[] colliders)
         {
             if (World.Enemies.Count <= 1)
                 return Vector2.Zero;
 
             Vector2 pcj = Vector2.Zero;
             int neighborCount = 0;
-            var colliders = World.Collisions.GetPossibleColliders(this, 2f, x => x is Enemy);
             foreach (var b in colliders)
             {
                 if (this != b && Distance(b.Position, position) <= 2f)
@@ -168,14 +163,13 @@ namespace Pacifier.Entities
             return (pcj - position) * 0.005f; // 0.01f
         }
 
-        private Vector2 Separation()
+        private Vector2 Separation(Entity[] colliders)
         {
             if (World.Enemies.Count <= 1)
                 return Vector2.Zero;
 
             Vector2 vec = Vector2.Zero;
             int neighborCount = 0;
-            var colliders = World.Collisions.GetPossibleColliders(this, 2.5f, x => x is Enemy);
             foreach (var b in colliders)
             {
                 if (this != b)
