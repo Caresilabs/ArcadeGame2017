@@ -19,7 +19,7 @@ namespace ShapeBlaster
 		public static void DrawLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float thickness = 2f)
 		{
 			Vector2 delta = end - start;
-			spriteBatch.Draw(PR.PixelGlow, start, PR.PixelGlow, color, delta.ToAngle(), new Vector2(0, 0.5f), new Vector2(delta.Length() / 32f, thickness / 9f), SpriteEffects.None, 0f);
+			spriteBatch.Draw(PR.PixelGlow, start, PR.PixelGlow, color, delta.ToAngle(), new Vector2(0, 0.5f), new Vector2(delta.Length() / 32f, thickness / 9f), SpriteEffects.None, 1f);
 		}
 
 		public static float ToAngle(this Vector2 vector)

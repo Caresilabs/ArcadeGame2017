@@ -15,7 +15,7 @@ namespace Pacifier.Entities
 {
     public class Dumbbell : Entity
     {
-        private const float KILL_DIST = 2.1f;
+        private const float KILL_DIST = 2.8f;
         private const float BELL_RADIUS = 0.15f;
         private const float MAX_SPEED = 0.5f;
 
@@ -88,8 +88,8 @@ namespace Pacifier.Entities
                 }
                 else
                 {
-                    other.IsDead = true;
-                    World.Grid.ApplyExplosiveForce(10, position, KILL_DIST, player.ShipColor);
+                    player.Kill();
+                    
                 }
                
                 IsDead = true;
@@ -118,6 +118,14 @@ namespace Pacifier.Entities
                 World.ParticleManager.CreateParticle(PR.Particle, Position, player.ShipColor, 50, 1,
                     new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 0f }); 
             }
+
+            var otherPlayer = player == World.PlayerGreen ? World.PlayerYellow : World.PlayerGreen;
+            float dst2 = Vector2.DistanceSquared(position, otherPlayer.Position);
+            if (dst2 < 4)
+            {
+                otherPlayer.Velocity = Vector2.Normalize(otherPlayer.Position - position) * 3 * (4 - dst2);
+            }
+            
         }
 
         public override bool QueryCollision(Entity other)

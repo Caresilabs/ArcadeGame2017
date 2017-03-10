@@ -55,15 +55,17 @@ namespace CloudColony.Framework
             var cellIds = GetIdForObj(obj.Bounds);
             foreach (var item in cellIds)
             {
-                Buckets[(item)].Add(obj);
+                Buckets[item].Add(obj);
             }
         }
 
-        public void AddObject(System.Collections.Generic.IEnumerable<Entity> objs)
+        public void AddObject(IEnumerable<Entity> objs)
         {
-            foreach (var item in objs)
+            foreach (var obj in objs)
             {
-                AddObject(item);
+                var cellIds = GetIdForObj(obj.Bounds);
+                foreach (var ids in cellIds)
+                    Buckets[ids].Add(obj);
             }
         }
 
@@ -74,16 +76,31 @@ namespace CloudColony.Framework
 
             float width = Cols;
 
-            float xMax = Math.Min(SceneWidth, bounds.Center.X + bounds.Radius);
-            float yMax = Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius);
+            int xMin = (int)Math.Floor(MathHelper.Max(0, bounds.Center.X - bounds.Radius) / CellSize);   // Math.Min(SceneWidth, bounds.Center.X + bounds.Radius + CellSize);
+            int yMin = (int)Math.Floor(MathHelper.Max(0, bounds.Center.Y - bounds.Radius) / CellSize); // Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius + CellSize);
 
-            for (float x = (int)Math.Max(0, bounds.Center.X - bounds.Radius); x < xMax; x+= 2)
+            int xMax = (int)Math.Floor(MathHelper.Min(SceneWidth - 0.1f, bounds.Center.X + bounds.Radius) / CellSize);   // Math.Min(SceneWidth, bounds.Center.X + bounds.Radius + CellSize);
+            int yMax = (int)Math.Floor(MathHelper.Min(SceneHeight - 0.1f, bounds.Center.Y + bounds.Radius) / CellSize);// Math.Min(SceneHeight, bounds.Center.Y + bounds.Radius + CellSize);
+
+            for (float x = xMin; x <= xMax; ++x)
             {
-                for (float y = (int)Math.Max(0, bounds.Center.Y - bounds.Radius); y < yMax; y+= 2)
+                for (float y = yMin; y <= yMax; ++y)
                 {
-                    AddBucket(x, y, width, bucketsObjIsIn);
+                    int cellPosition = (int)((x) + (y) * width);
+                    if (!bucketsObjIsIn.Contains(cellPosition))
+                        bucketsObjIsIn.Add(cellPosition);
+
+                    //AddBucket(x, y, width, bucketsObjIsIn);
                 }
             }
+
+            //for (float x = (int)Math.Max(0, bounds.Center.X - bounds.Radius); x < xMax; x += CellSize)
+            //{
+            //    for (float y = (int)Math.Max(0, bounds.Center.Y - bounds.Radius); y < yMax; y+= CellSize)
+            //    {
+            //        AddBucket(x, y, width, bucketsObjIsIn);
+            //    }
+            //}
 
             //Vector2 min = new Vector2(
             //   Math.Max(Math.Min(obj.Position.X - (obj.Bounds.Radius), SceneWidth - 1), 1),
@@ -129,7 +146,7 @@ namespace CloudColony.Framework
         }
 
         private List<Entity> colliders = new List<Entity>();
-        public Entity[] GetPossibleColliders(Entity obj)
+        public IEnumerable<Entity> GetPossibleColliders(Entity obj)
         {
             colliders.Clear();
             var bucketIds = GetIdForObj(obj.Bounds);
@@ -137,11 +154,11 @@ namespace CloudColony.Framework
             {
                 colliders.AddRange(Buckets[item]);
             }
-            return colliders.Distinct().ToArray();
+            return colliders.Distinct();    //.ToArray();
         }
 
         private Circle tmpCircle = new Circle(Vector2.Zero, 0);
-        public Entity[] GetPossibleColliders(Enemy enemy, float r, Func<Entity, bool> cond = null)
+        public IEnumerable<Entity> GetPossibleColliders(Enemy enemy, float r, Func<Entity, bool> cond = null)
         {
             colliders.Clear();
             tmpCircle.Center = enemy.Bounds.Center;
@@ -152,9 +169,9 @@ namespace CloudColony.Framework
                 colliders.AddRange(Buckets[item]);
             }
             if (cond != null)
-                return colliders.Distinct().Where(cond).ToArray();
+                return colliders.Distinct().Where(cond);//.ToList();
             else
-                return colliders.Distinct().ToArray();
+                return colliders.Distinct();//.ToList();
         }
     }
 }

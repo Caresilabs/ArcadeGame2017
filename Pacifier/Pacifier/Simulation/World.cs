@@ -141,6 +141,8 @@ namespace Pacifier.Simulation
             foreach (var dead in DeadEntities)
             {
                 Entities.Remove(dead);
+                if (dead is Enemy)
+                    Enemies.Remove((Enemy)dead);
             }
             DeadEntities.Clear();
         }

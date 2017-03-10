@@ -122,6 +122,11 @@ namespace Pacifier.Screens
                         batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.1f),
                             Color.White, 0, PR.Font.MeasureString(scoreText) / 2f, 2.0f, SpriteEffects.None, 0);
 
+
+                        scoreText = "Enemies: " + world.Enemies.Count;
+                        batch.DrawString(PR.Font, scoreText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.05f),
+                            Color.White, 0, Vector2.Zero, 1.3f, SpriteEffects.None, 0);
+
                         break;
                     case GameState.GAMEOVER:
 

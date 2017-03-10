@@ -8,12 +8,13 @@ using Pacifier.Simulation;
 using Microsoft.Xna.Framework;
 using Pacifier.Entities.Particles;
 using ShapeBlaster;
+using CloudColony.Framework.Tools;
 
 namespace Pacifier.Entities
 {
     public class Enemy : Entity
     {
-        public const float SEPARATION_WEIGHT = 2f;
+        public const float SEPARATION_WEIGHT = 2.5f;
         public const float COHESION_WEIGHT = 11f;
         public const float ALIGNMENT_WEIGHT = 2f;
      
@@ -24,14 +25,19 @@ namespace Pacifier.Entities
 
         public Enemy(World world, TextureRegion region, float x, float y, float width, float height) : base(world, region, x, y, width, height)
         {
-            MaxSpeed = 1f;
+            MaxSpeed = MathUtils.Random(1.0f, 1.2f);
+            Bounds.Radius =  Bounds.Radius * 0.8f;
         }
 
         public override void Update(float delta)
         {
             base.Update(delta);
 
-            var colliders = World.Collisions.GetPossibleColliders(this, 3f, x => x is Enemy);
+            var colliders = World.Collisions.GetPossibleColliders(this, 1.2f, x => x is Enemy).Take(35);    //.ToList();
+
+            // Cap
+            // if (colliders.Count > 30)
+            //     colliders.RemoveRange(30, colliders.Count - 30);
 
             var alignment = Vector2.Zero;// Alignment(colliders);
             var cohesion = Vector2.Zero;// Cohesion(colliders);
@@ -65,18 +71,21 @@ namespace Pacifier.Entities
         private void SeekTarget(float delta)
         {
             var desPos = Vector2.Zero;
+            Player player = null;
             if (World.PlayerGreen.IsDead)
             {
-                desPos = World.PlayerYellow.Position;
+                player = World.PlayerYellow;
             }
             else if (World.PlayerYellow.IsDead)
             {
-                desPos = World.PlayerGreen.Position;
+                player = World.PlayerGreen;
             }
             else
             {
-                desPos = Vector2.Distance(World.PlayerGreen.Position, position) < Vector2.Distance(World.PlayerYellow.Position, position) ? World.PlayerGreen.Position : World.PlayerYellow.Position;
+                player = Vector2.Distance(World.PlayerGreen.Position, position) < Vector2.Distance(World.PlayerYellow.Position, position) ? World.PlayerGreen : World.PlayerYellow;
             }
+
+            desPos = player.Position + player.Velocity * 0.1f;
             
             var desiredVelocity = (desPos - position);
             desiredVelocity.Normalize();
@@ -137,7 +146,7 @@ namespace Pacifier.Entities
         public void Kill()
         {
             IsDead = true;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 20; i++)
             {
                 World.ParticleManager.CreateParticle(PR.Particle, Position, Color.MediumVioletRed, 50, 1,
                     new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 1 });
@@ -163,7 +172,7 @@ namespace Pacifier.Entities
             return (pcj - position) * 0.005f; // 0.01f
         }
 
-        private Vector2 Separation(Entity[] colliders)
+        private Vector2 Separation(IEnumerable<Entity> colliders)
         {
             if (World.Enemies.Count <= 1)
                 return Vector2.Zero;

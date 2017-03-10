@@ -9,7 +9,7 @@ namespace Pacifier.Entities.Entities
     {
         public World World { get; private set; }
 
-        public Vector2 Velocity { get { return velocity; } }
+        public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
         protected Vector2 velocity;
 
         public Circle Bounds { get; set; }
@@ -22,6 +22,7 @@ namespace Pacifier.Entities.Entities
             this.velocity = new Vector2();
             this.IsDead = false;
             this.Bounds = new Circle(position, Math.Max(width, height) / 2.4f);
+            ZIndex = 0.01f;
         }
 
         public override void Update(float delta)
@@ -29,6 +30,11 @@ namespace Pacifier.Entities.Entities
             base.Update(delta);
             position += velocity * delta;
             Bounds.Center = position;
+            KeepInside();
+        }
+
+        public void KeepInside()
+        {
             position.X = MathHelper.Clamp(position.X, Size.X / 2, World.WORLD_WIDTH - Size.Y / 2);
             position.Y = MathHelper.Clamp(position.Y, Size.Y / 2, World.WORLD_HEIGHT - Size.Y / 2);
         }
@@ -44,5 +50,6 @@ namespace Pacifier.Entities.Entities
 
             return Bounds.Intersects(other.Bounds);
         }
+
     }
 }

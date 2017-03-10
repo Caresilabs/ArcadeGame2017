@@ -104,7 +104,7 @@ namespace Pacifier
         public static void PlayRandomSong()
         {
             MediaPlayer.Volume = 0.8f;
-            MediaPlayer.Play(Musics[MathUtils.Random(0, Musics.Count - 1)]);
+            MediaPlayer.Play(Musics[MathUtils.Random(Musics.Count)]);
         }
 
         public static bool AnyKeyPressed(PlayerIndex index)

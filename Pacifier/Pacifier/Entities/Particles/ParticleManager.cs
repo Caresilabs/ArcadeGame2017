@@ -50,7 +50,7 @@ namespace Pacifier.Entities.Particles
                 var particle = particleList[i];
 
                 Vector2 origin = new Vector2(particle.Texture.region.Width / 2, particle.Texture.region.Height / 2);
-                spriteBatch.Draw(particle.Texture, particle.Position, particle.Texture, particle.Color * particle.Alpha, particle.Orientation, origin, particle.Scale, 0, 0);
+                spriteBatch.Draw(particle.Texture, particle.Position, particle.Texture, particle.Color * particle.Alpha , particle.Orientation, origin, particle.Scale, 0, 0); //* particle.Alpha
             }
         }
 

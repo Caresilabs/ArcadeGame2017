@@ -35,10 +35,10 @@ namespace Pacifier.Entities.Particles
             Vector2.Add(ref particle.Position, ref vel, out particle.Position);
 
             // fade the particle if its PercentLife or speed is low.
-            float alpha = Math.Min(1, Math.Min(particle.PercentLife * 2, speed * 1f));
+            float alpha = Math.Min(1, Math.Min(particle.PercentLife * 2, speed * 100f)); //
             alpha *= alpha;
 
-            particle.Alpha = alpha * 255;// (byte)(255 * alpha);
+            particle.Alpha = alpha;// (byte)(255 * alpha); //alpha * 255f;// 
 
             // the length of bullet particles will be less dependent on their speed than other particles
             //if (particle.State.Type == ParticleType.Bullet)

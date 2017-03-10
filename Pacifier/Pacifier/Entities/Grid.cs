@@ -47,13 +47,16 @@ namespace ShapeBlaster
 				Velocity += acceleration;
 				Position += Velocity;
 				acceleration = Vector3.Zero;
-				if (Velocity.LengthSquared() < 0.001f * 0.001f)
+                float len2 = Velocity.LengthSquared();
+
+                if (len2 < 0.001f * 0.001f)
 					Velocity = Vector3.Zero;
 
 				Velocity *= damping;
 				damping = 0.98f;
 
-                Color = Color.Lerp(Color, gridColor, 0.01f);
+                float change = len2 < 0.001 ? 0.1f : 0.008f;
+                Color = Color.Lerp(Color, gridColor, change);
             }
 		}
 
@@ -186,7 +189,7 @@ namespace ShapeBlaster
                 float r2 = radius * radius;
 				if (dist2 < r2)
 				{
-                    mass.Color = Color.Lerp(color, gridColor, dist2 / r2);
+                    mass.Color = Color.Lerp(color, gridColor, dist2 / (r2 * radius));
 					mass.ApplyForce(100 * force * (mass.Position - position) / (10000 + dist2));
 					mass.IncreaseDamping(0.6f);
 				}
@@ -204,7 +207,7 @@ namespace ShapeBlaster
 
         private float thickBig = 0.06f;
         private float thickSmall = 0.04f;
-        static readonly Color gridColor = new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
+        static readonly Color gridColor = Color.Blue * 0.2f;//new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
 
         public void Draw(SpriteBatch spriteBatch)
 		{
@@ -262,9 +265,11 @@ namespace ShapeBlaster
 					// denser without the cost of simulating more springs and point masses.
 					if (x > 1 && y > 1)
 					{
-						Vector2 upLeft = ToVec2(points[x - 1, y - 1].Position);
-						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), gridColor, thickSmall * 0.5f);	// vertical line
-						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), gridColor, thickSmall * 0.5f);	// horizontal line
+                        var p1 = points[x - 1, y - 1];
+
+                        Vector2 upLeft = ToVec2(p1.Position);
+						spriteBatch.DrawLine(0.5f * (upLeft + up), 0.5f * (left + p), p1.Color, thickSmall * 0.5f);	// vertical line
+						spriteBatch.DrawLine(0.5f * (upLeft + left), 0.5f * (up + p), p1.Color, thickSmall * 0.5f);	// horizontal line
 					}
 				}
 			}
