@@ -207,7 +207,7 @@ namespace ShapeBlaster
 
         private float thickBig = 0.06f;
         private float thickSmall = 0.04f;
-        static readonly Color gridColor = Color.Blue * 0.2f;//new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
+        public static readonly Color gridColor = Color.Blue * 0.2f;//new Color(28, 50, 152, 128);   //new Color(30, 30, 139, 85);	// dark blue
 
         public void Draw(SpriteBatch spriteBatch)
 		{

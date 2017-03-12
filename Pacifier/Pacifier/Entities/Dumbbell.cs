@@ -15,7 +15,7 @@ namespace Pacifier.Entities
 {
     public class Dumbbell : Entity
     {
-        private const float KILL_DIST = 2.8f;
+        private const float KILL_DIST = 2.3f;
         private const float BELL_RADIUS = 0.15f;
         private const float MAX_SPEED = 0.5f;
 
@@ -37,6 +37,8 @@ namespace Pacifier.Entities
 
         public override void Update(float delta)
         {
+            base.Update(delta);
+
             var dir = new Vector2((float)Math.Cos((Rotation)), (float)Math.Sin((Rotation)));
             leftBell.Center = position - (dir * (-BELL_RADIUS * 1.25f + Size.X / 2f));
             rightBell.Center = position + (dir * (-BELL_RADIUS * 1.25f + Size.X / 2f));
@@ -46,7 +48,7 @@ namespace Pacifier.Entities
 
             UpdateMovement(delta);
 
-            base.Update(delta);
+         
         }
 
         private void UpdateMovement(float delta)
@@ -54,9 +56,9 @@ namespace Pacifier.Entities
            // Velocity
             Rotation += delta * 0.5f * rotationSpeed;
 
-            if (Bounds.Center.X - Bounds.Radius < 0)
+            if (Bounds.Center.X - Bounds.Radius < 0.25f)
             {
-                velocity.X *= -1;
+                velocity.X = Math.Abs(velocity.X);
                 rotationSpeed *= -1;
             }
             else if (Bounds.Center.X + Bounds.Radius > World.WORLD_WIDTH)
@@ -84,12 +86,12 @@ namespace Pacifier.Entities
                 Player player = other as Player;
                 if (scoreBounds.Collide(other.Bounds))
                 {
+                    PR.ScoreSound.Play();
                     KillAllNearby(player);
                 }
                 else
                 {
                     player.Kill();
-                    
                 }
                
                 IsDead = true;

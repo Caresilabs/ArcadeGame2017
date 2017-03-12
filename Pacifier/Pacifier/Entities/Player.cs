@@ -66,6 +66,8 @@ namespace Pacifier.Entities
         {
             IsDead = true;
 
+            PR.DeathSound.Play(1, 0, 0);
+
             World.Grid.ApplyExplosiveForce(20, position, 4, ShipColor);
             for (int i = 0; i < 50; i++)
             {

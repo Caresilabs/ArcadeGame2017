@@ -44,7 +44,11 @@ namespace Pacifier.Simulation
 
         public float Time { get; private set; }
 
+        public float Bpm { get; set; }
+
         private Spawner spawner;
+        private float bpmTimer;
+
 
         public World()
         {
@@ -58,16 +62,24 @@ namespace Pacifier.Simulation
             this.Enemies = new List<Enemy>();
             this.spawner = new Spawner(this);
             this.ParticleManager = new ParticleManager<ParticleState>(1024 * 2, ParticleState.UpdateParticle);
-            InitWorld();
-        }
+       }
 
-        private void InitWorld()
+        public void InitWorld(bool playerGreen = true, bool playerYellow = true)
         {
             PlayerGreen = new Player(this, PlayerIndex.One, PR.PlayerGreen, WORLD_WIDTH/2f - 2, WORLD_HEIGHT / 2f);
             PlayerYellow = new Player(this, PlayerIndex.Two, PR.PlayerYellow, WORLD_WIDTH /2f + 2, WORLD_HEIGHT / 2f);
 
-            Add(PlayerGreen);
-            Add(PlayerYellow);
+            if (playerGreen)
+                Add(PlayerGreen);
+
+            if (playerYellow)
+                Add(PlayerYellow);
+
+            for (int i = 0; i < 50; i++)
+            {
+                ParticleManager.CreateParticle(PR.Particle, new Vector2(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f), Color.IndianRed, 70, 1,
+                    new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 1 });
+            }
 
             spawner.SpawnDumbbell();
         }
@@ -125,6 +137,13 @@ namespace Pacifier.Simulation
 
             UpdateEntities(delta);
             spawner.Update(delta);
+
+            bpmTimer += delta;
+            if (bpmTimer >= Bpm)
+            {
+                bpmTimer -= Bpm;
+                Grid.ApplyExplosiveForce(4, new Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2), 3.3f, Color.MidnightBlue);
+            }
             
         }
 

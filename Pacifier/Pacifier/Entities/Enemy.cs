@@ -49,7 +49,7 @@ namespace Pacifier.Entities
                 velocity += flock * delta;
             }
 
-            Scale = new Vector2(1 + 0.2f * (float)Math.Sin(World.Time * 5), 1);
+            Scale = new Vector2(1 + 0.2f * (float)Math.Cos(World.Time * 3.4025f), 1); //* 5
 
             SeekTarget(delta);
 
@@ -85,7 +85,7 @@ namespace Pacifier.Entities
                 player = Vector2.Distance(World.PlayerGreen.Position, position) < Vector2.Distance(World.PlayerYellow.Position, position) ? World.PlayerGreen : World.PlayerYellow;
             }
 
-            desPos = player.Position + player.Velocity * 0.1f;
+            desPos = player.Position;// + player.Velocity * 0.1f;
             
             var desiredVelocity = (desPos - position);
             desiredVelocity.Normalize();

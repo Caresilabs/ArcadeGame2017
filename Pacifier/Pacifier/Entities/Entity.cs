@@ -35,8 +35,8 @@ namespace Pacifier.Entities.Entities
 
         public void KeepInside()
         {
-            position.X = MathHelper.Clamp(position.X, Size.X / 2, World.WORLD_WIDTH - Size.Y / 2);
-            position.Y = MathHelper.Clamp(position.Y, Size.Y / 2, World.WORLD_HEIGHT - Size.Y / 2);
+            position.X = MathHelper.Clamp(position.X, Size.X / 2f, World.WORLD_WIDTH - Size.Y / 2f);
+            position.Y = MathHelper.Clamp(position.Y, Size.Y / 2f, World.WORLD_HEIGHT - Size.Y / 2f);
         }
 
         public virtual void OnCollide(Entity other)

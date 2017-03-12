@@ -56,7 +56,8 @@ namespace Pacifier
         public static SpriteFont Font { get; private set; }
 
         // Sound
-        public static SoundEffect HitSound { get; private set; }
+        public static SoundEffect ScoreSound { get; private set; }
+        public static SoundEffect DeathSound { get; private set; }
 
         public static List<Song> Musics { get; private set; }
 
@@ -86,7 +87,6 @@ namespace Pacifier
 
             // Sound
             SoundEffect.MasterVolume = 1.0f;
-
            // MediaPlayer.Volume = 0.0f;
 
             MediaPlayer.IsRepeating = true;
@@ -97,14 +97,18 @@ namespace Pacifier
             Musics.Add(content.Load<Song>("strings"));
             //MediaPlayer.Play(content.Load<Song>("Sound/JuhaniJunkalaEpicBossBattle"));
 
-            // HitSound = content.Load<SoundEffect>("Sound/Hit");
+            ScoreSound = content.Load<SoundEffect>("pling");
+            DeathSound = content.Load<SoundEffect>("expl");
 
         }
 
-        public static void PlayRandomSong()
+        private static float[] bpms = new float[] { 130f, 130f, 130f, 120f };
+        public static float PlayRandomSong()
         {
-            MediaPlayer.Volume = 0.8f;
-            MediaPlayer.Play(Musics[MathUtils.Random(Musics.Count)]);
+            MediaPlayer.Volume = 0.9f;
+            int idx = MathUtils.Random(Musics.Count);
+            MediaPlayer.Play(Musics[idx]);
+            return 2 * (60f / bpms[idx]);
         }
 
         public static bool AnyKeyPressed(PlayerIndex index)

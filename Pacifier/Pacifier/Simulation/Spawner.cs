@@ -64,7 +64,7 @@ namespace Pacifier.Simulation
                 var enemy = new Enemy(World, PR.Enemy, enemyPos.X, enemyPos.Y, .5f, .5f);
                 enemy.KeepInside();
 
-                if (IsSafeSpawn(enemy, enemy.Bounds.Radius * 4))
+                if (IsSafeSpawn(enemy, enemy.Bounds.Radius * 5))
                 {
                     World.AddEnemy(enemy);
                 }

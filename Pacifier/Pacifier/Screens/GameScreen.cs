@@ -33,7 +33,9 @@ namespace Pacifier.Screens
             this.world = new World();
             this.renderer = new WorldRenderer(world);
             this.UICamera = new Camera2D(PR.VIEWPORT_WIDTH, PR.VIEWPORT_HEIGHT);
-            PR.PlayRandomSong();
+
+            world.Bpm = PR.PlayRandomSong();
+            world.InitWorld();
         }
 
         public override void Update(float delta)
