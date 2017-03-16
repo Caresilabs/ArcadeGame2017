@@ -52,7 +52,7 @@ namespace Pacifier
             PR.Load(Content);
             
 
-            nextScreen = new GameScreen();
+            nextScreen = new GameScreen(true, true);
             SetNextScreen();
 
         }
@@ -61,6 +61,7 @@ namespace Pacifier
         {
         }
 
+        public float Delta { get; private set; }
         protected override void Update(GameTime gameTime)
         {
 #if (!ARCADE)
@@ -69,10 +70,10 @@ namespace Pacifier
 #endif
 
             // get second between last frame and current frame, used for fair physics manipulation and not based on frames
-            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // then update the screen
-            CurrentScreen.Update(delta);
+            CurrentScreen.Update(Delta);
 
             base.Update(gameTime);
         }

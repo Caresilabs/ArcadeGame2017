@@ -116,7 +116,11 @@ namespace Pacifier
             bool pressed = false;
             for (int i = 1; i < Enum.GetValues(typeof(PlayerInput)).Length; i++)
             {
-                if (InputHandler.GetButtonState(index, (PlayerInput)i) == InputState.Released)
+                var pi = (PlayerInput)i;
+                if (pi == PlayerInput.Start)
+                    continue;
+
+                if (InputHandler.GetButtonState(index, pi) == InputState.Released)
                     pressed = true;
             }
 
@@ -129,7 +133,11 @@ namespace Pacifier
             bool pressed = false;
             for (int i = 1; i < Enum.GetValues(typeof(PlayerInput)).Length; i++)
             {
-                if (InputHandler.GetButtonState(index, (PlayerInput)i) == InputState.Pressed)
+                var pi = (PlayerInput)i;
+                if (pi == PlayerInput.Start)
+                    continue;
+
+                if (InputHandler.GetButtonState(index, pi) == InputState.Pressed)
                     pressed = true;
             }
 

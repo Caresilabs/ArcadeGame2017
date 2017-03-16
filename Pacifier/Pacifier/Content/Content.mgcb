@@ -76,3 +76,6 @@
 /processorParam:Quality=Best
 /build:test.wav
 
+#begin highscore.dat
+/copy:highscore.dat
+

@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using ShapeBlaster;
 using Pacifier.Entities.Particles;
+using CloudColony.Framework.Tools;
 
 namespace Pacifier.Entities
 {
@@ -26,7 +27,7 @@ namespace Pacifier.Entities
         public Player(World world, PlayerIndex index, TextureRegion region, float x, float y) : base(world, region, x, y, 0.52f, 0.52f)
         {
             this.Index = index;
-            this.ShipColor = index == PlayerIndex.One ? Color.Green : Color.Yellow;
+            this.ShipColor = index == PlayerIndex.One ? Color.LawnGreen : Color.Yellow;
         }
 
         public override void Update(float delta)
@@ -36,7 +37,7 @@ namespace Pacifier.Entities
             const float speed = PLAYER_SPEED;
             var desiredVelocity = speed * GetMovementDirection();
 
-            float change = velocity.Length() > speed ? 5 : 12;
+            float change = velocity.Length() > speed ? 4 : 12;
             velocity += (desiredVelocity - velocity) * delta * change;
 
             if (velocity != Vector2.Zero)
@@ -45,6 +46,8 @@ namespace Pacifier.Entities
             UpdateCollision(delta);
 
             MakeExhaustFire();
+           // if (MathUtils.Random(0, 100) <= 2)
+           // World.Grid.ApplyExplosiveForce(5, position, 2, Grid.gridColor);
         }
 
         private void UpdateCollision(float delta)

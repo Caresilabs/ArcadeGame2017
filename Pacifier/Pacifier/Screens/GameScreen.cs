@@ -28,6 +28,15 @@ namespace Pacifier.Screens
         private WorldRenderer renderer;
         private World world;
 
+        private bool playerGreenJoined;
+        private bool playerYellowJoined;
+
+        public GameScreen(bool playerGreenReady, bool playerYellowReady)
+        {
+            this.playerGreenJoined = playerGreenReady;
+            this.playerYellowJoined = playerYellowReady;
+        }
+
         public override void Init()
         {
             this.world = new World();
@@ -35,12 +44,13 @@ namespace Pacifier.Screens
             this.UICamera = new Camera2D(PR.VIEWPORT_WIDTH, PR.VIEWPORT_HEIGHT);
 
             world.Bpm = PR.PlayRandomSong();
-            world.InitWorld();
+            world.InitWorld(playerGreenJoined, playerYellowJoined);
         }
 
         public override void Update(float delta)
         {
             TotalTime += delta;
+            world.bpmTimer += delta;
 
             switch (State)
             {
@@ -60,8 +70,7 @@ namespace Pacifier.Screens
                         MediaPlayer.Volume = 0.21f;
                        // CC.WinSound.Play();
                     }
-
-                    if (world.State == World.WorldState.YELLOWWON)
+                    else if (world.State == World.WorldState.YELLOWWON)
                     {
                         State = GameState.GAMEOVER;
                       //  WinSprite = new Sprite(CC.WinBlue, CC.VIEWPORT_WIDTH / 2f, CC.VIEWPORT_HEIGHT * 0.45f, 96, 64);
@@ -74,7 +83,11 @@ namespace Pacifier.Screens
                     if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Start) == InputState.Released ||
                       InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Start) == InputState.Released)
                     {
-                        SetScreen(new GameScreen());
+                        SetScreen(new MainMenuScreen());
+                    }
+                    else if (PR.AnyKeyJustClicked(PlayerIndex.One) || PR.AnyKeyJustClicked(PlayerIndex.Two))
+                    {
+                        SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
                     }
 
                    // WinSprite.SetScale(MathHelper.Lerp(WinSprite.Scale.X, 6f, delta * 4f));
@@ -86,7 +99,7 @@ namespace Pacifier.Screens
                     if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Side) == InputState.Released ||
                     InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Side) == InputState.Released)
                     {
-                        SetScreen(new GameScreen());
+                        SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
                     }
                     else if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Start) == InputState.Released ||
                     InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Start) == InputState.Released)
@@ -114,27 +127,33 @@ namespace Pacifier.Screens
             {
                 switch (State)
                 {
-                   
+
                     case GameState.RUNNING:
-                        string scoreText = "Green Score: " + world.PlayerGreen.Score;
-                        batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.05f),
-                            Color.White, 0, PR.Font.MeasureString(scoreText) / 2f, 2.0f, SpriteEffects.None, 0);
+                        string scoreText = DrawScore(batch);
 
-                        scoreText = "Yellow Score: " + world.PlayerYellow.Score;
-                        batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.1f),
-                            Color.White, 0, PR.Font.MeasureString(scoreText) / 2f, 2.0f, SpriteEffects.None, 0);
-
-
-                        scoreText = "Enemies: " + world.Enemies.Count;
-                        batch.DrawString(PR.Font, scoreText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.05f),
-                            Color.White, 0, Vector2.Zero, 1.3f, SpriteEffects.None, 0);
+                        scoreText = string.Format("Debug, FPS: {0}, Enemies: {1}", Math.Round(1f / Game.Delta), world.Enemies.Count);
+                        batch.DrawString(PR.Font, scoreText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.95f),
+                            Color.White, 0, Vector2.Zero, 0.9f, SpriteEffects.None, 0);
 
                         break;
                     case GameState.GAMEOVER:
 
                         //WinSprite.Draw(batch);
+                        DrawScore(batch);
 
-                        string continueText = "Press start to continue...";
+                        if (playerGreenJoined && playerYellowJoined)
+                        {
+                            // Draw win/Lose
+                            string wonText = (world.State == World.WorldState.GREENWON ? "Player 1" : "Player 2") + " Won!";
+                            batch.DrawString(PR.Font, wonText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.47f),
+                                Color.White, 0, PR.Font.MeasureString(wonText) / 2f, 2.2f, SpriteEffects.None, 0);
+                        }
+                        else
+                        {
+
+                        }
+
+                        string continueText = "Press any key to restart!\n\nPress start to exit...";
                         batch.DrawString(PR.Font, continueText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.67f),
                             Color.White, 0, PR.Font.MeasureString(continueText) / 2f, 2.2f, SpriteEffects.None, 0);
 
@@ -154,6 +173,18 @@ namespace Pacifier.Screens
             }
 
             batch.End();
+        }
+
+        private string DrawScore(SpriteBatch batch)
+        {
+            string scoreText = "Green Score:\n" + world.PlayerGreen.Score;
+            batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.05f, PR.VIEWPORT_HEIGHT * 0.03f),
+                Color.White, 0, Vector2.Zero, 2.0f, SpriteEffects.None, 0);
+
+            scoreText = "Yellow Score:\n" + world.PlayerYellow.Score;
+            batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.95f - PR.Font.MeasureString(scoreText).X * 2, PR.VIEWPORT_HEIGHT * 0.03f),
+                Color.White, 0, Vector2.Zero, 2.0f, SpriteEffects.None, 0);
+            return scoreText;
         }
 
         public override void Dispose()

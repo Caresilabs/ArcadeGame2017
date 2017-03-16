@@ -47,8 +47,7 @@ namespace Pacifier.Entities
             scoreBounds.end = rightBell.Center;
 
             UpdateMovement(delta);
-
-         
+            
         }
 
         private void UpdateMovement(float delta)
@@ -125,7 +124,7 @@ namespace Pacifier.Entities
             float dst2 = Vector2.DistanceSquared(position, otherPlayer.Position);
             if (dst2 < 4)
             {
-                otherPlayer.Velocity = Vector2.Normalize(otherPlayer.Position - position) * 3 * (4 - dst2);
+                otherPlayer.Velocity = Vector2.Normalize(otherPlayer.Position - position) * 2.5f * (4 - dst2);
             }
             
         }

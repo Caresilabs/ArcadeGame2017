@@ -33,7 +33,7 @@ namespace Pacifier.Entities
         {
             base.Update(delta);
 
-            var colliders = World.Collisions.GetPossibleColliders(this, 1.2f, x => x is Enemy).Take(35);    //.ToList();
+            var colliders = World.Collisions.GetPossibleColliders(this, 1.4f, x => x is Enemy).Take(70);    //.ToList();
 
             // Cap
             // if (colliders.Count > 30)

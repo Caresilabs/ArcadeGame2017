@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Pacifier.Entities;
 using Pacifier.Entities.Entities;
 using Pacifier.Entities.Particles;
+using Pacifier.Utils;
 using ShapeBlaster;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace Pacifier.Simulation
         public float Bpm { get; set; }
 
         private Spawner spawner;
-        private float bpmTimer;
+        public float bpmTimer;
 
 
         public World()
@@ -71,14 +72,24 @@ namespace Pacifier.Simulation
 
             if (playerGreen)
                 Add(PlayerGreen);
+            else PlayerGreen.IsDead = true;
 
             if (playerYellow)
                 Add(PlayerYellow);
+            else PlayerYellow.IsDead = true;
 
-            for (int i = 0; i < 50; i++)
+            bpmTimer = Bpm;
+
+            Grid.ApplyExplosiveForce(5, new Vector2(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f), 8, Color.IndianRed);
+            for (int n = 0; n < 5; n++)
             {
-                ParticleManager.CreateParticle(PR.Particle, new Vector2(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f), Color.IndianRed, 70, 1,
-                    new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 1 });
+                Vector2 pos = new Vector2(MathUtils.Random(1, WORLD_WIDTH), MathUtils.Random(1, WORLD_HEIGHT));
+                //new Vector2(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f)
+                for (int i = 0; i < 30; i++)
+                {
+                    ParticleManager.CreateParticle(PR.Particle, pos, Color.IndianRed, 70, 1,
+                        new ParticleState() { Velocity = Extensions.NextVector2(0, 0.2f), Type = ParticleType.Bullet, LengthMultiplier = 1 });
+                }
             }
 
             spawner.SpawnDumbbell();
@@ -107,10 +118,12 @@ namespace Pacifier.Simulation
                         if (PlayerGreen.Score > PlayerYellow.Score)
                         {
                             State = WorldState.GREENWON;
+                            HighscoreManager.SaveHighscore(PlayerGreen.Score);
                         }
                         else
                         {
                             State = WorldState.YELLOWWON;
+                            HighscoreManager.SaveHighscore(PlayerYellow.Score);
                         }
 
                         foreach (var item in Enemies)
@@ -137,8 +150,7 @@ namespace Pacifier.Simulation
 
             UpdateEntities(delta);
             spawner.Update(delta);
-
-            bpmTimer += delta;
+            
             if (bpmTimer >= Bpm)
             {
                 bpmTimer -= Bpm;
