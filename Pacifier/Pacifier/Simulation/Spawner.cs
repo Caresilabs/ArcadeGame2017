@@ -45,7 +45,7 @@ namespace Pacifier.Simulation
             if (enemyTime < 0)
             {
                 if (World.Enemies.Count < MAX_ENEMIES)
-                    SpawnEnemies((int)(Math.Max(1, time / 2.5f)));
+                    SpawnEnemies((int)(Math.Max(1, time / 2.25f)));
 
                 enemyTime = MathUtils.Random(2.5f, 3.5f);
             }
@@ -80,7 +80,7 @@ namespace Pacifier.Simulation
             {
                 size.X = edgeWidth;
                 size.Y = edgeHeight;
-                return new Vector2(MathUtils.Random(0, World.WORLD_HEIGHT - edgeWidth), 0);
+                return new Vector2(MathUtils.Random(0, World.WORLD_WIDTH - edgeWidth), 0);
             }
             else if (val < 50)
             {
@@ -98,7 +98,7 @@ namespace Pacifier.Simulation
             {
                 size.X = -edgeHeight;
                 size.Y = edgeWidth;
-                return new Vector2(World.WORLD_WIDTH, MathUtils.Random(0, World.WORLD_WIDTH - edgeWidth));
+                return new Vector2(World.WORLD_WIDTH, MathUtils.Random(0, World.WORLD_HEIGHT - edgeWidth));
             }
         }
 

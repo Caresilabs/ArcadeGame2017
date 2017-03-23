@@ -14,7 +14,7 @@ namespace Pacifier.Entities
 {
     public class Enemy : Entity
     {
-        public const float SEPARATION_WEIGHT = 2.8f;
+        public const float SEPARATION_WEIGHT = 2.9f;
         public const float COHESION_WEIGHT = 11f;
         public const float ALIGNMENT_WEIGHT = 2f;
      
@@ -26,14 +26,14 @@ namespace Pacifier.Entities
         public Enemy(World world, TextureRegion region, float x, float y, float width, float height) : base(world, region, x, y, width, height)
         {
             MaxSpeed = MathUtils.Random(1.0f, 1.2f);
-            Bounds.Radius =  Bounds.Radius * 0.8f;
+            Bounds.Radius =  Bounds.Radius * 0.78f;
         }
 
         public override void Update(float delta)
         {
             base.Update(delta);
 
-            var colliders = World.Collisions.GetPossibleColliders(this, 1.4f, x => x is Enemy).Take(50);    //.ToList();
+            var colliders = World.Collisions.GetPossibleColliders(this, 1.1f, x => x is Enemy).Take(40);    //.ToList();
 
             // Cap
             // if (colliders.Count > 30)
@@ -85,7 +85,7 @@ namespace Pacifier.Entities
                 player = Vector2.Distance(World.PlayerGreen.Position, position) < Vector2.Distance(World.PlayerYellow.Position, position) ? World.PlayerGreen : World.PlayerYellow;
             }
 
-            desPos = player.Position;// + player.Velocity * 0.1f;
+            desPos = player.Position + player.Velocity * 0.02f;
             
             var desiredVelocity = (desPos - position);
             desiredVelocity.Normalize();

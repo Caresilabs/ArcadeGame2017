@@ -11,9 +11,9 @@ namespace Pacifier.Utils
      */
     public class HighscoreManager
     {
-        public static void SaveHighscore(long highscore)
+        public static void SaveHighscore(ulong highscore)
         {
-            List<long> highscores = GetHighscores().Take(5).ToList();
+            List<ulong> highscores = GetHighscores().Take(5).ToList();
             highscores.Add(highscore);
 
             highscores = highscores.OrderByDescending(c => c).ToList();
@@ -34,7 +34,7 @@ namespace Pacifier.Utils
             writer.Close();
         }
 
-        public static long[] GetHighscores()
+        public static ulong[] GetHighscores()
         {
             string read = "";
             using (StreamReader reader = new StreamReader("Content/highscore.dat"))
@@ -45,11 +45,11 @@ namespace Pacifier.Utils
             }
 
             string[] strScore = read.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            long[] intScore = new long[strScore.Length];
+            ulong[] intScore = new ulong[strScore.Length];
 
             for (int i = 0; i < intScore.Length; i++)
             {
-                intScore[i] = long.Parse(strScore[i]);
+                intScore[i] = ulong.Parse(strScore[i]);
             }
 
             return intScore;

@@ -19,7 +19,7 @@ namespace Pacifier.Entities
         private const float BELL_RADIUS = 0.15f;
         private const float MAX_SPEED = 0.5f;
 
-        private const int SCORE_VALUE = 100;
+        private const uint SCORE_VALUE = 100;
 
         private Circle leftBell;
         private Circle rightBell;
@@ -109,8 +109,11 @@ namespace Pacifier.Entities
                 }
             }
 
+            if (count == 1)
+                ++count;
+
             // ADD SCORE
-            player.AddScore(SCORE_VALUE * Math.Max(1, count * count));
+            player.AddScore(SCORE_VALUE * (uint)Math.Max(1, count * count));
 
             World.Grid.ApplyExplosiveForce(10 + count * 0.01f, position, KILL_DIST + count * 0.1f, player.ShipColor); // TODO ADD COLOR
 

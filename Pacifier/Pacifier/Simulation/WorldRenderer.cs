@@ -22,7 +22,7 @@ namespace Pacifier.Simulation
             
             batch.Begin(SpriteSortMode.BackToFront,
                     BlendState.AlphaBlend,
-                    SamplerState.PointClamp,
+                    SamplerState.LinearClamp,
                     null,
                     null,
                     null,

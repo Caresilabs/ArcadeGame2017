@@ -19,7 +19,7 @@ namespace Pacifier.Entities
 
         public PlayerIndex Index { get; private set; }
 
-        public long Score { get; private set; }
+        public ulong Score { get; private set; }
         public object Orientation { get; private set; }
 
         public Color ShipColor { get; private set; }
@@ -67,6 +67,9 @@ namespace Pacifier.Entities
 
         public void Kill()
         {
+            if (IsDead)
+                return;
+
             IsDead = true;
 
             PR.DeathSound.Play(1, 0, 0);
@@ -79,7 +82,7 @@ namespace Pacifier.Entities
             }
         }
 
-        public void AddScore(int score)
+        public void AddScore(uint score)
         {
             Score += score;
         }

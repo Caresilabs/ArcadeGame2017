@@ -30,7 +30,7 @@ namespace Pacifier.Screens
 
         private Sprite logo;
 
-        private long highscore;
+        private ulong highscore;
 
         private Grid grid;
 
@@ -82,18 +82,17 @@ namespace Pacifier.Screens
             // Hack so input wont happen after every game
             if (TotalTime > 0.4f)
             {
-                //if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Side) == InputState.Released ||
-                //       InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Side) == InputState.Released)
-                //{
-                //    SetScreen(new CreditsScreen());
-                //    return;
-                //}
-
-                if (PR.AnyKeyJustClicked(PlayerIndex.One))
+                if (!PlayerGreenReady && PR.AnyKeyJustClicked(PlayerIndex.One))
+                {
                     PlayerGreenReady = true;
+                    grid.ApplyExplosiveForce(90, new Vector2(PR.VIEWPORT_WIDTH * 0.25f, PR.VIEWPORT_HEIGHT * 0.55f), 540, Color.Green);
+                }
 
-                if (PR.AnyKeyJustClicked(PlayerIndex.Two))
+                if (!PlayerYellowReady && PR.AnyKeyJustClicked(PlayerIndex.Two))
+                {
                     PlayerYellowReady = true;
+                    grid.ApplyExplosiveForce(90, new Vector2(PR.VIEWPORT_WIDTH * 0.75f, PR.VIEWPORT_HEIGHT * 0.55f), 540, Color.Yellow);
+                }
             }
 
             if (PlayerGreenReady || PlayerYellowReady)
@@ -142,7 +141,7 @@ namespace Pacifier.Screens
             {
                 string txt = "Player 1 - Join";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.25f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Green, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)((Math.Cos(TotalTime * Math.PI * bpm * 2)) / 15f), SpriteEffects.None, 0);
+                    Color.Green, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)((Math.Cos(TotalTime * Math.PI * 1f /bpm * 2)) / 15f), SpriteEffects.None, 0);
             }
 
             // Draw player yellow side
@@ -157,7 +156,7 @@ namespace Pacifier.Screens
             {
                 string txt = "Player 2 - Join";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.75f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Yellow, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)(Math.Cos(TotalTime * Math.PI * bpm * 2) / 15f), SpriteEffects.None, 0);
+                    Color.Yellow, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)(Math.Cos(TotalTime * Math.PI * 1f/bpm * 2) / 15f), SpriteEffects.None, 0);
             }
 
             // Draw logo
@@ -185,7 +184,7 @@ namespace Pacifier.Screens
 
                 string insert = "Press Start To Play!";
                 batch.DrawString(PR.Font, insert, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.83f),
-                     Color.White * (float)((Math.Sin(TotalTime * Math.PI * bpm * 2) + 1) / 2f), 0, PR.Font.MeasureString(insert) / 2f, 1.9f, SpriteEffects.None, 0);
+                     Color.White * (float)((Math.Sin(TotalTime * Math.PI * 1f/bpm * 2) + 1) / 2f), 0, PR.Font.MeasureString(insert) / 2f, 1.9f, SpriteEffects.None, 0);
                 //new Color(56, 45, 0)
             }
 

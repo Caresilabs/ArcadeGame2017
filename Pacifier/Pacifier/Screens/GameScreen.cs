@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
 using CloudColony.Framework.Tools;
 using Microsoft.Xna.Framework.Input;
+using Pacifier.Entities;
 
 namespace Pacifier.Screens
 {
@@ -32,12 +33,14 @@ namespace Pacifier.Screens
         private bool playerYellowJoined;
 
         private float gameOverDelay;
+        private float lastManStandingTimer;
 
         public GameScreen(bool playerGreenReady, bool playerYellowReady)
         {
             this.playerGreenJoined = playerGreenReady;
             this.playerYellowJoined = playerYellowReady;
-            gameOverDelay = 0;
+            this.gameOverDelay = 0;
+            this.lastManStandingTimer = 10;
         }
 
         public override void Init()
@@ -66,6 +69,8 @@ namespace Pacifier.Screens
 
                     world.Update(delta);
 
+                  
+
                     if (world.State == World.WorldState.GREENWON)
                     {
                         State = GameState.GAMEOVER;
@@ -79,6 +84,19 @@ namespace Pacifier.Screens
                       //  WinSprite = new Sprite(CC.WinBlue, CC.VIEWPORT_WIDTH / 2f, CC.VIEWPORT_HEIGHT * 0.45f, 96, 64);
                         MediaPlayer.Volume = 0.21f;
                       //  CC.WinSound.Play();
+                    }
+                    else   // Last man stand
+                    if (playerGreenJoined && playerYellowJoined)
+                    {
+                        if (world.PlayerGreen.IsDead || world.PlayerYellow.IsDead)
+                        {
+                            lastManStandingTimer -= delta;
+                            if (lastManStandingTimer <= 0)
+                            {
+                                world.PlayerGreen.Kill();
+                                world.PlayerYellow.Kill();
+                            }
+                        }
                     }
 
                     break;
@@ -128,7 +146,7 @@ namespace Pacifier.Screens
 
             batch.Begin(SpriteSortMode.BackToFront,
                     BlendState.AlphaBlend,
-                    SamplerState.PointClamp,
+                    SamplerState.LinearClamp,
                     null,
                     null,
                     null,
@@ -147,6 +165,15 @@ namespace Pacifier.Screens
 
                     case GameState.RUNNING:
                         string scoreText = DrawScore(batch);
+
+                        if (lastManStandingTimer != 10)
+                        {
+                            string countdownText = (Math.Ceiling(lastManStandingTimer)).ToString();
+                            batch.DrawString(PR.Font, countdownText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.47f),
+                                Color.White, 0, PR.Font.MeasureString(countdownText) / 2f,
+                                    2.4f + 2 * (1 - (lastManStandingTimer - (float)Math.Floor(lastManStandingTimer))),
+                                        SpriteEffects.None, 0);
+                        }
                         break;
                     case GameState.GAMEOVER:
 
