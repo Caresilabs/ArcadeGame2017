@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Pacifier.Utils;
+using ShapeBlaster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,11 @@ namespace Pacifier.Screens
 
         private long highscore;
 
+        private Grid grid;
+
+        public float bpm = 1;
+        public float bpmTimer;
+
         public override void Init()
         {
             this.PlayerGreenReady = false;
@@ -40,6 +46,12 @@ namespace Pacifier.Screens
             highscore = HighscoreManager.GetHighscores()[0];
             InitUI();
 
+            grid = new Grid(new Rectangle(-128, -108, PR.VIEWPORT_WIDTH + 128, PR.VIEWPORT_HEIGHT + 108), new Vector2(128, 108));
+            grid.thickBig = 12;
+            grid.thickSmall = 6;
+            grid.ApplyExplosiveForce(100, new Vector2(PR.VIEWPORT_WIDTH, PR.VIEWPORT_HEIGHT) /2f, 600, Grid.gridColor);
+
+            bpm = PR.PlayMenuMusic();
             //MediaPlayer.Volume = 0.33f;
         }
 
@@ -65,6 +77,8 @@ namespace Pacifier.Screens
         {
             TotalTime += delta;
 
+            grid.Update();
+
             // Hack so input wont happen after every game
             if (TotalTime > 0.4f)
             {
@@ -89,19 +103,14 @@ namespace Pacifier.Screens
                 {
                     SetScreen(new GameScreen(PlayerGreenReady, PlayerYellowReady));
                 }
-                //PlayDelayTime += delta;
+            }
 
-                //if (PlayDelayTime >= 1f)
-                //{
-                //    if (!BothReady)
-                //    {
-                //        SetScreen(new GameScreen());
-                //        //PR.PlayGameSound.Play();
-                //        //PR.PlayGameSound.Play();
-                //        // MediaPlayer.Volume = 0.12f;
-                //        BothReady = true;
-                //    }
-                //}
+            bpmTimer += delta;
+            if (bpmTimer >= bpm)
+            {
+                bpmTimer -= bpm;
+                grid.ApplyExplosiveForce(40, new Vector2(PR.VIEWPORT_WIDTH * 0.25f, PR.VIEWPORT_HEIGHT * 0.55f), 550, Color.Green * 0.7f);
+                grid.ApplyExplosiveForce(40, new Vector2(PR.VIEWPORT_WIDTH * 0.75f, PR.VIEWPORT_HEIGHT * 0.55f), 550, Color.Yellow * 0.55f);
             }
 
         }
@@ -112,12 +121,13 @@ namespace Pacifier.Screens
 
             batch.Begin(SpriteSortMode.BackToFront,
                     BlendState.AlphaBlend,
-                    SamplerState.PointClamp,
+                    SamplerState.LinearClamp,
                     null,
                     null,
                     null,
                     null);
 
+            grid.Draw(batch);
             //Background.Draw(batch);
 
             // Draw player green side
@@ -126,13 +136,13 @@ namespace Pacifier.Screens
             {
                 string txt = "Player 1 READY";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.25f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Green, (float)Math.Sin(TotalTime * 10) / 10f, PR.Font.MeasureString(txt) / 2f, 1.45f, SpriteEffects.None, 0);
+                    Color.Green, (float)Math.Sin(TotalTime * (Math.PI * bpm * 4)) / 10f, PR.Font.MeasureString(txt) / 2f, 1.45f, SpriteEffects.None, 0);
             }
             else
             {
                 string txt = "Player 1 - Join";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.25f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Green, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)((Math.Sin(TotalTime * 5) + 1) / 15f), SpriteEffects.None, 0);
+                    Color.Green, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)((Math.Cos(TotalTime * Math.PI * bpm * 2)) / 15f), SpriteEffects.None, 0);
             }
 
             // Draw player yellow side
@@ -141,33 +151,47 @@ namespace Pacifier.Screens
             {
                 string txt = "Player 2 READY";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.75f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Yellow, (float)Math.Sin(TotalTime * 10) / 10f, PR.Font.MeasureString(txt) / 2f, 1.45f, SpriteEffects.None, 0);
+                    Color.Yellow, (float)Math.Sin(TotalTime * Math.PI * bpm * 4) / 10f, PR.Font.MeasureString(txt) / 2f, 1.45f, SpriteEffects.None, 0);
             }
             else
             {
                 string txt = "Player 2 - Join";
                 batch.DrawString(PR.Font, txt, new Vector2(PR.VIEWPORT_WIDTH * 0.75f, PR.VIEWPORT_HEIGHT * 0.55f),
-                    Color.Yellow, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)((Math.Sin(TotalTime * 5) + 1) / 15f), SpriteEffects.None, 0);
+                    Color.Yellow, 0, PR.Font.MeasureString(txt) / 2f, 1.15f + (float)(Math.Cos(TotalTime * Math.PI * bpm * 2) / 15f), SpriteEffects.None, 0);
             }
 
             // Draw logo
-            logo.SetPosition(logo.Position.X, logo.Position.Y + (float)Math.Sin(TotalTime * 2) / 2.5f);
-            logo.Draw(batch);
+            {
+                string highscoreText = "PACIFIER";
+                batch.DrawString(PR.Font, highscoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.18f),
+                     Color.White, 0, PR.Font.MeasureString(highscoreText) / 2f, 3.0f, SpriteEffects.None, 0);
+            }
+
+
+            {
+                string highscoreText = "Highscore";
+                batch.DrawString(PR.Font, highscoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.31f),
+                     Color.White, 0, PR.Font.MeasureString(highscoreText) / 2f, 1.4f, SpriteEffects.None, 0);
+
+                highscoreText = highscore.ToString();
+                batch.DrawString(PR.Font, highscoreText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.38f),
+                     Color.White, 0, PR.Font.MeasureString(highscoreText) / 2f, 1.8f, SpriteEffects.None, 0);
+            }
 
             // Draw insert coin
+            if (PlayerGreenReady || PlayerYellowReady)
             {
                 CoinBackground.Draw(batch);
 
-                string insert = "Insert coin";
-                batch.DrawString(PR.Font, insert, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.86f),
-                     new Color(56, 45, 0) * (float)((Math.Sin(TotalTime * 5.0f) + 1) / 2f), 0, PR.Font.MeasureString(insert) / 2f, 1.9f, SpriteEffects.None, 0);
+                string insert = "Press Start To Play!";
+                batch.DrawString(PR.Font, insert, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.83f),
+                     Color.White * (float)((Math.Sin(TotalTime * Math.PI * bpm * 2) + 1) / 2f), 0, PR.Font.MeasureString(insert) / 2f, 1.9f, SpriteEffects.None, 0);
+                //new Color(56, 45, 0)
             }
 
             // Copy right.
-            string copy = highscore +  " Created by Simon Bothen ... github.com/Caresilabs/ArcadeGame2017 ... " + "(c) " + DateTime.Now.Year;
-            //batch.DrawString(PR.Font, copy, new Vector2(42, 29f),
-            //    Color.WhiteSmoke * (float)((Math.Sin(TotalTime * 2.5f) + 1) / 2f), 0, Vector2.Zero, 1.15f, SpriteEffects.None, 0);
-            batch.DrawString(PR.Font, copy, new Vector2(PR.VIEWPORT_WIDTH - (TotalTime * 150) % (PR.VIEWPORT_WIDTH + PR.Font.MeasureString(copy).X * 1.15f), 29f),
+            string copy = "Created by Simon Bothen ... github.com/Caresilabs/ArcadeGame2017 ... " + "(c) " + DateTime.Now.Year;
+            batch.DrawString(PR.Font, copy, new Vector2(PR.VIEWPORT_WIDTH - (TotalTime * 150) % (PR.VIEWPORT_WIDTH + PR.Font.MeasureString(copy).X * 1.15f), 10f),
                Color.WhiteSmoke, 0, Vector2.Zero, 1.15f, SpriteEffects.None, 0);
 
 

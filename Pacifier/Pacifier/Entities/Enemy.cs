@@ -14,7 +14,7 @@ namespace Pacifier.Entities
 {
     public class Enemy : Entity
     {
-        public const float SEPARATION_WEIGHT = 2.5f;
+        public const float SEPARATION_WEIGHT = 2.8f;
         public const float COHESION_WEIGHT = 11f;
         public const float ALIGNMENT_WEIGHT = 2f;
      
@@ -33,7 +33,7 @@ namespace Pacifier.Entities
         {
             base.Update(delta);
 
-            var colliders = World.Collisions.GetPossibleColliders(this, 1.4f, x => x is Enemy).Take(70);    //.ToList();
+            var colliders = World.Collisions.GetPossibleColliders(this, 1.4f, x => x is Enemy).Take(50);    //.ToList();
 
             // Cap
             // if (colliders.Count > 30)
@@ -63,7 +63,7 @@ namespace Pacifier.Entities
             base.OnCollide(other);
             if (other is Player)
             {
-                other.IsDead = true;
+                (other as Player).Kill();
                 World.Grid.ApplyExplosiveForce(10, position, 3, Color.Red);
             }
         }

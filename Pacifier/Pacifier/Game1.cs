@@ -52,7 +52,7 @@ namespace Pacifier
             PR.Load(Content);
             
 
-            nextScreen = new GameScreen(true, true);
+            nextScreen = new MainMenuScreen();
             SetNextScreen();
 
         }

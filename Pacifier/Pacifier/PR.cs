@@ -60,6 +60,7 @@ namespace Pacifier
         public static SoundEffect DeathSound { get; private set; }
 
         public static List<Song> Musics { get; private set; }
+        public static Song MenuMusic { get; private set; }
 
         public static void Load(ContentManager content)
         {
@@ -95,6 +96,8 @@ namespace Pacifier
             Musics.Add(content.Load<Song>("polesapart"));
             Musics.Add(content.Load<Song>("problematic"));
             Musics.Add(content.Load<Song>("strings"));
+
+            MenuMusic = content.Load<Song>("strings");
             //MediaPlayer.Play(content.Load<Song>("Sound/JuhaniJunkalaEpicBossBattle"));
 
             ScoreSound = content.Load<SoundEffect>("pling");
@@ -109,6 +112,12 @@ namespace Pacifier
             int idx = MathUtils.Random(Musics.Count);
             MediaPlayer.Play(Musics[idx]);
             return 2 * (60f / bpms[idx]);
+        }
+
+        public static float PlayMenuMusic()
+        {
+            MediaPlayer.Play(MenuMusic);
+            return 2 * (60f / 120f);
         }
 
         public static bool AnyKeyPressed(PlayerIndex index)

@@ -31,10 +31,13 @@ namespace Pacifier.Screens
         private bool playerGreenJoined;
         private bool playerYellowJoined;
 
+        private float gameOverDelay;
+
         public GameScreen(bool playerGreenReady, bool playerYellowReady)
         {
             this.playerGreenJoined = playerGreenReady;
             this.playerYellowJoined = playerYellowReady;
+            gameOverDelay = 0;
         }
 
         public override void Init()
@@ -80,17 +83,22 @@ namespace Pacifier.Screens
 
                     break;
                 case GameState.GAMEOVER:
-                    if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Start) == InputState.Released ||
-                      InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Start) == InputState.Released)
+                    gameOverDelay += delta;
+
+                    if (gameOverDelay > 1.4f)
                     {
-                        SetScreen(new MainMenuScreen());
-                    }
-                    else if (PR.AnyKeyJustClicked(PlayerIndex.One) || PR.AnyKeyJustClicked(PlayerIndex.Two))
-                    {
-                        SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
+                        if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Start) == InputState.Released ||
+                          InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Start) == InputState.Released)
+                        {
+                            SetScreen(new MainMenuScreen());
+                        }
+                        else if (PR.AnyKeyJustClicked(PlayerIndex.One) || PR.AnyKeyJustClicked(PlayerIndex.Two))
+                        {
+                            SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
+                        }
                     }
 
-                   // WinSprite.SetScale(MathHelper.Lerp(WinSprite.Scale.X, 6f, delta * 4f));
+                    // WinSprite.SetScale(MathHelper.Lerp(WinSprite.Scale.X, 6f, delta * 4f));
 
                     world.Update(delta);
 
@@ -99,7 +107,8 @@ namespace Pacifier.Screens
                     if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Side) == InputState.Released ||
                     InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Side) == InputState.Released)
                     {
-                        SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
+                        //SetScreen(new GameScreen(playerGreenJoined, playerYellowJoined));
+                        SetScreen(new MainMenuScreen());
                     }
                     else if (InputHandler.GetButtonState(PlayerIndex.One, PlayerInput.Start) == InputState.Released ||
                     InputHandler.GetButtonState(PlayerIndex.Two, PlayerInput.Start) == InputState.Released)
@@ -125,16 +134,19 @@ namespace Pacifier.Screens
                     null,
                     UICamera.GetMatrix());
             {
+
+                // Draw debug
+                {
+                    var debugText = string.Format("Debug, FPS: {0}, Enemies: {1}", Math.Round(1f / Game.Delta), world.Enemies.Count);
+                    batch.DrawString(PR.Font, debugText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.95f),
+                        Color.White, 0, Vector2.Zero, 0.9f, SpriteEffects.None, 0);
+                }
+
                 switch (State)
                 {
 
                     case GameState.RUNNING:
                         string scoreText = DrawScore(batch);
-
-                        scoreText = string.Format("Debug, FPS: {0}, Enemies: {1}", Math.Round(1f / Game.Delta), world.Enemies.Count);
-                        batch.DrawString(PR.Font, scoreText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.95f),
-                            Color.White, 0, Vector2.Zero, 0.9f, SpriteEffects.None, 0);
-
                         break;
                     case GameState.GAMEOVER:
 
@@ -144,18 +156,32 @@ namespace Pacifier.Screens
                         if (playerGreenJoined && playerYellowJoined)
                         {
                             // Draw win/Lose
-                            string wonText = (world.State == World.WorldState.GREENWON ? "Player 1" : "Player 2") + " Won!";
+                            string wonText = (world.State == World.WorldState.GREENWON ? "Player 1" : "Player 2") + "  Won!";
+
+                            if ((world.State == World.WorldState.GREENWON ? world.PlayerGreen.Score : world.PlayerYellow.Score) == 0)
+                            {
+                                wonText = "Draw!";
+                            }
+
                             batch.DrawString(PR.Font, wonText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.47f),
-                                Color.White, 0, PR.Font.MeasureString(wonText) / 2f, 2.2f, SpriteEffects.None, 0);
+                                world.State == World.WorldState.GREENWON ? world.PlayerGreen.ShipColor : world.PlayerYellow.ShipColor,
+                                    0, PR.Font.MeasureString(wonText) / 2f, 2.8f, SpriteEffects.None, 0);
                         }
                         else
                         {
-
+                            string wonText = "Game Over!";
+                            batch.DrawString(PR.Font, wonText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.47f),
+                                playerGreenJoined ? world.PlayerGreen.ShipColor : world.PlayerYellow.ShipColor,
+                                    0, PR.Font.MeasureString(wonText) / 2f, 2.8f, SpriteEffects.None, 0);
                         }
 
-                        string continueText = "Press any key to restart!\n\nPress start to exit...";
-                        batch.DrawString(PR.Font, continueText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.67f),
-                            Color.White, 0, PR.Font.MeasureString(continueText) / 2f, 2.2f, SpriteEffects.None, 0);
+                        string continueText = "Press any key to restart!";
+                        batch.DrawString(PR.Font, continueText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.78f),
+                            Color.White, 0, PR.Font.MeasureString(continueText) / 2f, 1.8f, SpriteEffects.None, 0);
+
+                        continueText = "Press start to exit...";
+                        batch.DrawString(PR.Font, continueText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.86f),
+                            Color.White, 0, PR.Font.MeasureString(continueText) / 2f, 1.4f, SpriteEffects.None, 0);
 
                         break;
                     case GameState.PAUSED:
@@ -175,15 +201,43 @@ namespace Pacifier.Screens
             batch.End();
         }
 
+        private float greenScoreText;
+        private float yellowScoreText;
         private string DrawScore(SpriteBatch batch)
         {
-            string scoreText = "Green Score:\n" + world.PlayerGreen.Score;
-            batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.05f, PR.VIEWPORT_HEIGHT * 0.03f),
-                Color.White, 0, Vector2.Zero, 2.0f, SpriteEffects.None, 0);
+            string scoreText = string.Empty;
+            float deltaScore;
+            // GREEN
+            if (playerGreenJoined)
+            {
+                scoreText = "Green Score";
+                batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.05f, PR.VIEWPORT_HEIGHT * 0.03f),
+                    Color.White, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
 
-            scoreText = "Yellow Score:\n" + world.PlayerYellow.Score;
-            batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.95f - PR.Font.MeasureString(scoreText).X * 2, PR.VIEWPORT_HEIGHT * 0.03f),
-                Color.White, 0, Vector2.Zero, 2.0f, SpriteEffects.None, 0);
+                deltaScore = MathHelper.Lerp(greenScoreText, world.PlayerGreen.Score, 0.07f) - greenScoreText;
+                greenScoreText += deltaScore;
+                batch.DrawString(PR.Font, (Math.Round(greenScoreText)).ToString(), new Vector2(PR.VIEWPORT_WIDTH * 0.05f, PR.VIEWPORT_HEIGHT * 0.1f),
+                    Color.Lerp(Color.White, world.PlayerGreen.ShipColor, deltaScore * 0.002f), 0, Vector2.Zero, 2.0f + Math.Min(1.6f, deltaScore * 0.002f), SpriteEffects.None, 0);
+            }
+
+
+            // YELLOW
+            if (playerYellowJoined)
+            {
+                scoreText = "Yellow Score";
+                batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.95f - PR.Font.MeasureString(scoreText).X * 1.5f, PR.VIEWPORT_HEIGHT * 0.03f),
+                    Color.White, 0, Vector2.Zero, 1.5f, SpriteEffects.None, 0);
+
+                deltaScore = MathHelper.Lerp(yellowScoreText, world.PlayerYellow.Score, 0.07f) - yellowScoreText;
+                yellowScoreText += deltaScore;
+                scoreText = (Math.Round(yellowScoreText)).ToString();
+                var origin = PR.Font.MeasureString(scoreText);
+                origin.Y = 0;
+                batch.DrawString(PR.Font, scoreText, new Vector2(PR.VIEWPORT_WIDTH * 0.95f, PR.VIEWPORT_HEIGHT * 0.1f), //- PR.Font.MeasureString(scoreText).X * 2
+                    Color.Lerp(Color.White, world.PlayerYellow.ShipColor, deltaScore * 0.002f),
+                        0, origin, 2.0f + Math.Min(1.6f, deltaScore * 0.002f), SpriteEffects.None, 0);
+            }
+
             return scoreText;
         }
 
