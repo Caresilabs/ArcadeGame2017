@@ -185,7 +185,7 @@ namespace Pacifier.Screens
                             // Draw win/Lose
                             string wonText = (world.State == World.WorldState.GREENWON ? "Player 1" : "Player 2") + "  Won!";
 
-                            if ((world.State == World.WorldState.GREENWON ? world.PlayerGreen.Score : world.PlayerYellow.Score) == 0)
+                            if (world.PlayerYellow.Score == world.PlayerGreen.Score)
                             {
                                 wonText = "Draw!";
                             }
