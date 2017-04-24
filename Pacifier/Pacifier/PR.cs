@@ -87,7 +87,7 @@ namespace Pacifier
 
 
             // Sound
-            SoundEffect.MasterVolume = 1.0f;
+            SoundEffect.MasterVolume = .9f;
            // MediaPlayer.Volume = 0.0f;
 
             MediaPlayer.IsRepeating = true;

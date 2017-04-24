@@ -39,7 +39,7 @@ namespace Pacifier.Simulation
             {
                 SpawnDumbbell();
 
-                bellTime = MathHelper.Max(2.5f, MathUtils.Random(3.5f, 6f) - (time * 0.02f));
+                bellTime = MathHelper.Max(2.5f, MathUtils.Random(3.5f, 5.5f) - (time * 0.02f));
             }
 
             if (enemyTime < 0)
