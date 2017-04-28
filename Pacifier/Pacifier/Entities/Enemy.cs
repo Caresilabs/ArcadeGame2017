@@ -26,7 +26,7 @@ namespace Pacifier.Entities
         public Enemy(World world, TextureRegion region, float x, float y, float width, float height) : base(world, region, x, y, width, height)
         {
             MaxSpeed = MathUtils.Random(1.0f, 1.2f);
-            Bounds.Radius =  Bounds.Radius * 0.78f;
+            Bounds.Radius =  Bounds.Radius * 0.76f;
         }
 
         public override void Update(float delta)

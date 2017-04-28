@@ -197,6 +197,9 @@ namespace Pacifier.Screens
                         else
                         {
                             string wonText = "Game Over!";
+                            if (world.WasHighscore)
+                                wonText = "HIGHSCORE!";
+
                             batch.DrawString(PR.Font, wonText, new Vector2(PR.VIEWPORT_WIDTH / 2f, PR.VIEWPORT_HEIGHT * 0.47f),
                                 playerGreenJoined ? world.PlayerGreen.ShipColor : world.PlayerYellow.ShipColor,
                                     0, PR.Font.MeasureString(wonText) / 2f, 2.8f, SpriteEffects.None, 0);
