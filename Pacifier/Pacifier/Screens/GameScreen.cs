@@ -154,11 +154,11 @@ namespace Pacifier.Screens
             {
 
                 // Draw debug
-                {
-                    var debugText = string.Format("Debug, FPS: {0}, Enemies: {1}", Math.Round(1f / Game.Delta), world.Enemies.Count);
-                    batch.DrawString(PR.Font, debugText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.95f),
-                        Color.White, 0, Vector2.Zero, 0.9f, SpriteEffects.None, 0);
-                }
+                //{
+                //    var debugText = string.Format("Debug, FPS: {0}, Enemies: {1}", Math.Round(1f / Game.Delta), world.Enemies.Count);
+                //    batch.DrawString(PR.Font, debugText, new Vector2(2, PR.VIEWPORT_HEIGHT * 0.95f),
+                //        Color.White, 0, Vector2.Zero, 0.9f, SpriteEffects.None, 0);
+                //}
 
                 switch (State)
                 {
