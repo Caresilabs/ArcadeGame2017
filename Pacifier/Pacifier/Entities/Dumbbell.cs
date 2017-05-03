@@ -91,10 +91,10 @@ namespace Pacifier.Entities
                     if (diff < 1.5f && diff > 0)
                         collectPitch += 0.35f;
                     else
-                        collectPitch = MathUtils.Random(-0.1f, 0.1f);
+                        collectPitch = MathUtils.Random(-0.0f, -0.1f);//(-0.1f, 0.1f);
                     lastWorldTime = World.Time;
 
-                    PR.ScoreSound.Play(1, Math.Min(1.0f, collectPitch), 0);
+                    PR.ScoreSound.Play(0.75f, Math.Min(1.0f, collectPitch), 0);
                     KillAllNearby(player);
                 }
                 else

@@ -37,7 +37,7 @@ namespace Pacifier.Entities
             const float speed = PLAYER_SPEED;
             var desiredVelocity = speed * GetMovementDirection();
 
-            float change = velocity.Length() > speed ? 4 : 12;
+            float change = velocity.Length() > speed ? 4 : 11;
             velocity += (desiredVelocity - velocity) * delta * change;
 
             if (velocity != Vector2.Zero)

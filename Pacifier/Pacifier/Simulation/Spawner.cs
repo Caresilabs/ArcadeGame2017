@@ -12,7 +12,7 @@ namespace Pacifier.Simulation
 {
     public class Spawner
     {
-        private const int MAX_ENEMIES = 800;
+        private const int MAX_ENEMIES = 700;
 
         public World World { get; private set; }
 
@@ -45,7 +45,7 @@ namespace Pacifier.Simulation
             if (enemyTime < 0)
             {
                 if (World.Enemies.Count < MAX_ENEMIES)
-                    SpawnEnemies((int)(Math.Max(1, time / 2.25f)));
+                    SpawnEnemies((int)(Math.Max(2, time / 2.25f)));
 
                 enemyTime = MathUtils.Random(2.5f, 3.5f);
             }
