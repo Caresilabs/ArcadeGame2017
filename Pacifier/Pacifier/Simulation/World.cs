@@ -45,6 +45,8 @@ namespace Pacifier.Simulation
 
         public float Time { get; private set; }
 
+        public bool WasHighscore { get; private set; }
+
         public float Bpm { get; set; }
 
         private Spawner spawner;
@@ -62,6 +64,7 @@ namespace Pacifier.Simulation
             this.Enemies = new List<Enemy>();
             this.spawner = new Spawner(this);
             this.ParticleManager = new ParticleManager<ParticleState>((int)(1024 * 1.4f), ParticleState.UpdateParticle);
+            this.WasHighscore = false;
        }
 
         public void InitWorld(bool playerGreen = true, bool playerYellow = true)
@@ -117,12 +120,12 @@ namespace Pacifier.Simulation
                         if (PlayerGreen.Score > PlayerYellow.Score)
                         {
                             State = WorldState.GREENWON;
-                            HighscoreManager.SaveHighscore(PlayerGreen.Score);
+                            WasHighscore = HighscoreManager.SaveHighscore(PlayerGreen.Score);
                         }
                         else
                         {
                             State = WorldState.YELLOWWON;
-                            HighscoreManager.SaveHighscore(PlayerYellow.Score);
+                            WasHighscore = HighscoreManager.SaveHighscore(PlayerYellow.Score);
                         }
 
                         foreach (var item in Enemies)

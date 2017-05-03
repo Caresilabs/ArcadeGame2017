@@ -11,7 +11,7 @@ namespace Pacifier.Utils
      */
     public class HighscoreManager
     {
-        public static void SaveHighscore(ulong highscore)
+        public static bool SaveHighscore(ulong highscore)
         {
             List<ulong> highscores = GetHighscores().Take(5).ToList();
             highscores.Add(highscore);
@@ -32,6 +32,8 @@ namespace Pacifier.Utils
 
             writer.Flush();
             writer.Close();
+
+            return highscores.First() == highscore;
         }
 
         public static ulong[] GetHighscores()
